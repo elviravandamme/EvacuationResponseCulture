@@ -1,0 +1,98 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; A* algorithm - find shortest path                                            ;;
+;; it takes the source and destination patches as inputs                        ;;
+;; it reports the optimal path (if one exists) between them as output           ;;
+;; inspired by http://ccl.northwestern.edu/netlogo/models/community/Astardemo1  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+to-report find-a-path [ source-patch destination-patch]
+  ; initialize all variables to default values
+  let search-done? false
+  let search-path []
+  let current-patch 0
+  set astar_open []
+  set astar_closed []
+  ifelse destination-patch = 99999 or not member? destination-patch walking-patches [
+    ;user-message( word "turtle: " who  ",  Wrong destination" )
+    set current-destination 0 set path 0 report [] ]
+  
+  ; add source patch in the open list
+  [set astar_open patch-set lput source-patch astar_open ;; patch-set to enforce reading as set even with one patch
+  
+  
+  ; loop until we reach the destination or the open list becomes empty
+  while [ search-done? != true]
+  [
+    ifelse any? patch-set astar_open
+    [
+      ; sort the patches in open list in increasing order of their f() values
+      ;set astar_open sort-by [[f] of ?1 < [f] of ?2] astar_open Dereciated netlogo function
+      set astar_open sort-on [f] patch-set astar_open ;; sorts by f value of patches in patchset in ascendiong order
+                                                      ; take the first patch in the open list
+                                                      ; as the current patch (which is currently being explored (n))
+                                                      ; and remove it from the open list
+      set current-patch item 0 astar_open
+      set astar_open remove-item 0 astar_open
+      
+      ; add the current patch to the closed list
+      set astar_closed lput current-patch astar_closed
+      
+      ; explore neighbors of the current patch
+      ask current-patch
+      [ 
+        
+        ; if any of the neighbors is the destination stop the search process
+        ifelse (distance destination-patch <= 1)        
+        [ ;; put in extra if-loop to make procedure faster
+          set destination-patch current-patch
+          set search-done? true] 
+        [ ; the neighbors should not be obstacles or already explored patches (part of the closed list) AND it does not have 12 or more people in the patch, since there can be no more than 8 people in as quare metre = 12 agents in one patch of around 1.5 m2
+          ask neighbors with [ (member? self free-patches) and (not member? self astar_closed)  and   (self != parent-patch)  ] 
+          [
+            ; the neighbors to be explored should also not be the source or
+            ; destination patches or already a part of the open list (unexplored patches list)
+            if not member? self astar_open and self != source-patch and self != destination-patch
+            [
+              ; add the eligible patch to the open list
+              set astar_open lput self astar_open
+              
+              ; update the path finding variables of the eligible patch
+              set parent-patch current-patch
+              set g [g] of parent-patch  + 1
+              set h distance destination-patch
+              set f (g + h) ] ]]]]
+      [
+    ; if a path is not found (search is incomplete) and the open list is exhausted
+    ; display a user message and report an empty search path list.
+      ;user-message( word "turtle: " who  ",  A path from the source to the destination does not exist." )
+    report []
+  ]
+]
+
+; if a path is found (search completed) add the current patch
+; (node adjacent to the destination) to the search path.
+set search-path lput current-patch search-path
+
+; trace the search path from the current patch
+; all the way to the source patch using the parent patch
+; variable which was set during the search for every patch that was explored
+let temp first search-path
+while [ temp != source-patch ]
+[
+  set search-path lput [parent-patch] of temp search-path
+  set temp [parent-patch] of temp
+]
+
+; add the destination patch to the front of the search path
+set search-path fput destination-patch search-path
+
+; reverse the search path so that it starts from a patch adjacent to the
+; source patch and ends at the destination patch
+set search-path reverse search-path
+
+; report the search path
+    report search-path]
+  
+end
+

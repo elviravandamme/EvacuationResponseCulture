@@ -1,0 +1,2097 @@
+to setup-visitor-tasks                                                ;; Setup response tasks of visitors decision tree
+  
+  If culture = "Czech Republic" 
+  [ifelse fire-seen? = true  [
+    ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+      [setup-response-tasks-czech-fire]
+    [setup-response-tasks-czech-fire-closed-space]]
+    [ifelse informed-by-staff? = true
+      [ ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-czech-staff]
+        [setup-response-tasks-czech-staff-closed-space]]
+      [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-czech-basic]
+        [setup-response-tasks-czech-basic-closed-space]]]]
+  
+  If culture = "Poland" 
+  [ifelse fire-seen? = true  [
+    ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+      [setup-response-tasks-poland-fire]
+    [setup-response-tasks-poland-fire-closed-space]]
+    [ifelse informed-by-staff? = true
+      [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-poland-staff]
+        [setup-response-tasks-poland-staff-closed-space]]
+      [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-poland-basic]
+        [setup-response-tasks-poland-basic-closed-space]]]]
+  
+  If culture = "Turkey" 
+    [ifelse fire-seen? = true  [
+      ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+      [setup-response-tasks-turkey-fire]
+      [setup-response-tasks-turkey-fire-closed-space]]
+      [ifelse informed-by-staff? = true
+        [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+          [setup-response-tasks-turkey-staff]
+          [setup-response-tasks-turkey-staff-closed-space]]
+        [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+          [setup-response-tasks-turkey-basic]
+          [setup-response-tasks-turkey-basic-closed-space]]]] 
+  
+  If culture = "UK" 
+  [ifelse fire-seen? = true  [
+    ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+    [setup-response-tasks-uk-fire]
+    [setup-response-tasks-uk-fire-closed-space]]
+    [ifelse informed-by-staff? = true
+      [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-uk-staff]
+        [setup-response-tasks-uk-staff-closed-space]]
+      [ifelse ([pcolor] of patch-here != 118.1 and (any? other turtles in-radius 10))
+        [setup-response-tasks-uk-basic]
+        [setup-response-tasks-uk-basic-closed-space]]]] 
+  
+  set current-response-tasks-list response-tasks-list
+  
+  check-empty-current-response-tasks-list
+  
+end
+
+
+;;;;;; PROBABILITIES FOR PERFORMING VISITOR RESPONSE TASKS ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to setup-response-tasks-czech-basic
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 12 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 20 [
+      set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" "pack-belongings-nearby-action"]]
+      [ifelse chance <= 24 [
+        set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" ]]
+        [ifelse chance <= 28 [
+          set response-tasks-list [ "scan-environment" "seek-info-coversation" "pack-belongings-nearby-action" "take-coat-action" ]]
+          [ ifelse chance <= 34 [
+            set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+            [ifelse chance <= 38[
+              set response-tasks-list  [ "scan-environment" "seek-info-other-location"]]
+              [ifelse chance <= 42 [
+                set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional"]]
+                [ifelse chance <= 53 [
+                  set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+                  [ifelse chance <= 57 [
+                    set response-tasks-list [ "scan-environment" "take-coat-action"]]
+                    [ifelse chance <= 70 [
+                      set response-tasks-list [ "scan-environment"]]
+                      [ifelse chance <= 74 [
+                        set response-tasks-list ["seek-info-professional"] ]
+                        [ifelse chance <= 78[
+                          set response-tasks-list ["pack-belongings-nearby-action" "seek-info-other-location"]]
+                          [ifelse chance <= 88 [
+                            set response-tasks-list["pack-belongings-nearby-action"]]
+                            [ set response-tasks-list []]                 
+  ]]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 7 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 7 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 25 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 30 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 8 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 23 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 8 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 20 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 19 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 8 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 30 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 30 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 7 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 37 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 13 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+  
+end
+
+to setup-response-tasks-poland-basic
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 7 [
+    set response-tasks-list [ "seek-info-coversation"] ]
+  [ifelse chance <= 11 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional" "pack-belongings-nearby-action"]]
+    [ifelse chance <= 18 [
+      set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+      [ifelse chance <= 23 [
+        set response-tasks-list [ "scan-environment" "seek-info-coversation" "pack-belongings-nearby-action"]]
+        [ifelse chance <= 28 [
+          set response-tasks-list [ "scan-environment" "seek-info-coversation" "shut-down-work-action" "pack-belongings-nearby-action" ]]
+          [ ifelse chance <= 32 [
+            set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" "shut-down-work-action" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 36[
+              set response-tasks-list  [ "scan-environment" "seek-info-coversation" "seek-info-professional" "pack-belongings-nearby-action" ]]
+              [ifelse chance <= 42 [
+                set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" ]]
+                [ifelse chance <= 48 [
+                  set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+                  [ifelse chance <= 52 [
+                    set response-tasks-list [ "scan-environment" "actively-provide-info-nearby" ]]
+                    [ifelse chance <= 56 [
+                      set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action" "take-coat-action"] ]
+                      [ifelse chance <= 60 [
+                        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ] ]
+                        [ifelse chance <= 69 [
+                          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+                          [ifelse chance <= 77 [
+                            set response-tasks-list [ "scan-environment"]]
+                            [ifelse chance <= 86 [
+                              set response-tasks-list [ "seek-info-professional"]]
+                              [ifelse chance <= 94[
+                                set response-tasks-list [ "pack-belongings-nearby-action"]]
+                                [ set response-tasks-list []]          
+  ]]]]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 5 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 3 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 21 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 16 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 17 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 29 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 7 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 22 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 26 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 17 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 30 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 24 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 48 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 27 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+
+end
+
+
+to setup-response-tasks-turkey-basic
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 6 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 13 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" ]]
+    [ifelse chance <= 16 [
+      set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+      [ifelse chance <= 26 [
+        set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+        [ifelse chance <= 30 [
+          set response-tasks-list [ "scan-environment" "shut-down-work-action"]]
+          [ ifelse chance <= 34 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "shut-down-work-action" ]]
+            [ifelse chance <= 40[
+              set response-tasks-list  [ "scan-environment" "pack-belongings-nearby-action"  ]]
+              [ifelse chance <= 51 [
+                set response-tasks-list [ "scan-environment"]]
+                [ifelse chance <= 56 [
+                  set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+                  [ifelse chance <= 65 [
+                    set response-tasks-list [ "seek-info-professional"]]
+                    [ifelse chance <= 71 [
+                      set response-tasks-list ["shut-down-work-action"] ]
+                      [ifelse chance <= 78 [
+                        set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                        [ifelse chance <= 84 [
+                          set response-tasks-list [ "physically-assist"]]
+                          [ifelse chance <= 90 [
+                            set response-tasks-list ["collect-emergency-equipment"]]
+                            [ set response-tasks-list []]                    
+  ]]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 17 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 23 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 35 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 17 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 20 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 31 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 15 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 19 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 18 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 45 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 39 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 29 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 41 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 33 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+  
+end
+
+to setup-response-tasks-uk-basic
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 6 [
+    set response-tasks-list ["seek-info-other-location"]]
+  [ifelse chance <= 11 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" ]]
+    [ifelse chance <= 17 [
+      set response-tasks-list [ "scan-environment" "seek-info-coversation"]]
+      [ifelse chance <= 25 [
+        set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+        [ifelse chance <= 30 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action"  ]]
+          [ ifelse chance <= 40 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 47[
+              set response-tasks-list  [ "scan-environment" "take-coat-action"]]
+              [ifelse chance <= 58 [
+                set response-tasks-list [ "scan-environment"]]
+                [ifelse chance <= 64 [
+                  set response-tasks-list [ "seek-info-professional"]]
+                  [ifelse chance <= 69 [
+                    set response-tasks-list [ "pack-belongings-nearby-action" "scan-environment"]]
+                    [ifelse chance <= 78 [
+                      set response-tasks-list [ "pack-belongings-nearby-action"]]
+                      [ifelse chance <= 83 [
+                        set response-tasks-list [ "take-coat-action"] ]
+                        [ set response-tasks-list []]          
+  ]]]]]]]]]]]
+  
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 8 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 7 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 24 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 16 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 16 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 17 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 8 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 12 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 16 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 15 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 34 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 30 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 11 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 18 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 19 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+  
+end
+
+to setup-response-tasks-czech-staff
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 6 [
+    set response-tasks-list [ "seek-info-coversation"] ]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 18 [
+      set response-tasks-list [ "scan-environment" "shut-down-work-action"]]
+      [ifelse chance <= 22 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional" ]]
+        [ifelse chance <= 29 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+          [ ifelse chance <= 34 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 47[
+              set response-tasks-list [ "scan-environment"]]
+              [ifelse chance <= 51 [
+                set response-tasks-list [ "seek-info-professional" "scan-environment"]]
+                [ifelse chance <= 55 [
+                  set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+                  [ifelse chance <= 59 [
+                    set response-tasks-list [ "seek-info-professional"]]
+                    [ifelse chance <= 63 [
+                      set response-tasks-list [ "seek-info-other-location" "scan-environment"] ]
+                      [ifelse chance <= 67 [
+                        set response-tasks-list [ "pack-belongings-nearby-action" "seek-info-other-location" ] ]
+                        [ifelse chance <= 72 [
+                          set response-tasks-list [ "pack-belongings-nearby-action" "take-coat-action"]]
+                          [ifelse chance <= 81 [
+                            set response-tasks-list [ "pack-belongings-nearby-action"]]
+                            [ifelse chance <= 88 [
+                              set response-tasks-list [ "take-coat-action"]]
+                              [ set response-tasks-list []]
+                              
+  ]]]]]]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 9 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 6 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 33 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 24 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 17 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 28 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 23 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 18 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 8 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 49 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 17 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 10 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 32 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 13 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+  
+end
+
+to setup-response-tasks-poland-staff
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 8 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation"]]
+  [ifelse chance <= 17 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 23 [
+      set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action" "take-coat-action"]]
+      [ifelse chance <= 25 [
+        set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action"]]
+        [ifelse chance <= 30 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+          [ ifelse chance <= 39 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 45[
+              set response-tasks-list  [ "scan-environment" "physically-assist"]]
+              [ifelse chance <= 55 [
+                set response-tasks-list [ "scan-environment"]]
+                [ifelse chance <= 59 [
+                  set response-tasks-list [ "seek-info-professional"]]
+                  [ifelse chance <= 63 [
+                    set response-tasks-list [ "actively-provide-info-nearby"]]
+                    [ifelse chance <= 69 [
+                      set response-tasks-list [ "shut-down-work-action"] ]
+                      [ifelse chance <= 73 [
+                        set response-tasks-list [ "pack-belongings-nearby-action" "scan-environment"] ]
+                        [ifelse chance <= 80 [
+                          set response-tasks-list [ "pack-belongings-nearby-action" "physically-assist"]]
+                          [ifelse chance <= 86 [
+                            set response-tasks-list [ "pack-belongings-nearby-action"]]
+                            [ set response-tasks-list []]
+                            
+  ]]]]]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 11 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 8 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 31 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 19 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 21 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 29 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 12 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 20 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 23 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 14 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 38 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 19 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 29 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 26 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+  
+  
+end
+
+to setup-response-tasks-turkey-staff
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 7 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+  [ifelse chance <= 11 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "  "seek-info-coversation"]]
+    [ifelse chance <= 21 [
+      set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+      [ifelse chance <= 26 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+        [ifelse chance <= 34[
+          set response-tasks-list [ "scan-environment"]]
+          [ ifelse chance <= 39 [
+            set response-tasks-list [ "seek-info-professional" "scan-environment"]]
+            [ifelse chance <= 49[
+              set response-tasks-list  [ "seek-info-professional"]]
+              [ifelse chance <= 53 [
+                set response-tasks-list ["shut-down-work-action" "pack-belongings-nearby-action"] ]
+                [ifelse chance <= 60 [
+                  set response-tasks-list ["shut-down-work-action"] ]
+                  [ifelse chance <= 64 [
+                    set response-tasks-list [ "pack-belongings-nearby-action" "shut-down-work-action"]]
+                    [ifelse chance <= 71 [
+                      set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                      [ifelse chance <= 78 [
+                        set response-tasks-list [ "physically-assist"] ]
+                        [ifelse chance <= 82 [
+                          set response-tasks-list ["collect-emergency-equipment" "seek-info-other-location"]]
+                          [ifelse chance <= 98 [
+                            set response-tasks-list ["collect-emergency-equipment"]]
+                            [ set response-tasks-list []]
+                            
+  ]]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 21 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 26 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 36 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 16 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 25 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 33 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 19 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 21 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 23 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 27 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 44 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 20 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 5 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 41 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 26 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-uk-staff
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 5 [
+    set response-tasks-list [ "seek-info-coversation"] ]
+  [ifelse chance <= 9 [
+    set response-tasks-list [ "scan-environment" "seek-info-coversation" "seek-info-professional" ]]
+    [ifelse chance <= 13 [
+      set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+      [ifelse chance <= 20 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+        [ifelse chance <= 25 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+          [ ifelse chance <= 31 [
+            set response-tasks-list [ "scan-environment" "take-coat-action"]]
+            [ifelse chance <= 40[
+              set response-tasks-list [ "scan-environment"]]
+              [ifelse chance <= 50 [
+                set response-tasks-list [ "seek-info-professional"]]
+                [ifelse chance <= 55 [
+                  set response-tasks-list ["seek-info-other-location"]]
+                  [ifelse chance <= 61 [
+                    set response-tasks-list [ "pack-belongings-nearby-action" "take-coat-action"]]
+                    [ifelse chance <= 71 [
+                      set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                      [ifelse chance <= 83 [
+                        set response-tasks-list [ "take-coat-action"] ]
+                        [ifelse chance <= 89 [
+                          set response-tasks-list ["collect-emergency-equipment"]]
+                          [ set response-tasks-list []]
+                          
+  ]]]]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 10 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 10 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 29 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 13 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 24 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 29 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 19 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 20 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 10 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 24 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 13 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 10 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 16 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 10 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-czech-fire
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "call-alarm-number-action" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "call-alarm-number-action"] ]
+    [ifelse chance <= 18 [
+      set response-tasks-list [ "seek-info-coversation"] ]
+      [ifelse chance <= 24 [
+        set response-tasks-list [ "scan-environment" "fight-fire"]]
+        [ifelse chance <= 31[
+          set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+          [ ifelse chance <= 41 [
+            set response-tasks-list [ "scan-environment" "seek-info-coversation" ]]
+            [ifelse chance <= 47[
+              set response-tasks-list  [ "scan-environment" " seek-info-professional "]]
+              [ifelse chance <= 52 [
+                set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional" ] ]
+                [ifelse chance <= 57 [
+                  set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+                  [ifelse chance <= 67 [
+                    set response-tasks-list [ "scan-environment"]  ]
+                    [ifelse chance <= 74 [
+                      set response-tasks-list [ "seek-info-professional"] ]
+                      [ifelse chance <= 84 [
+                        set response-tasks-list [ "pack-belongings-nearby-action"]]
+                        [ set response-tasks-list []]
+]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 36 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 39 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 38 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 47 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 25 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 39 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 37 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 49 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 50 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 41 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 44 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 44 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 41 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 59 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 44 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 28 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 15 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-poland-fire
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "call-alarm-number-action" "scan-environment"]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "call-alarm-number-action"] ]
+    [ifelse chance <= 20 [
+      set response-tasks-list [ "seek-info-coversation"]  ]
+      [ifelse chance <= 24 [
+        set response-tasks-list [ "scan-environment" "call-alarm-number-action" "seek-info-professional"]]
+        [ifelse chance <= 32[
+          set response-tasks-list [ "scan-environment" "call-alarm-number-action" "pack-belongings-nearby-action"]]
+          [ ifelse chance <= 42 [
+            set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+            [ifelse chance <= 47[
+              set response-tasks-list  [ "scan-environment" " seek-info-professional "]]
+              [ifelse chance <= 52 [
+                set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action"] ]
+                [ifelse chance <= 63 [
+                  set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+                  [ifelse chance <= 71 [
+                    set response-tasks-list [ "scan-environment"]  ]
+                    [ifelse chance <= 75 [
+                      set response-tasks-list [ "seek-info-professional"] ]
+                      [ifelse chance <= 80 [
+                        set response-tasks-list [ "actively-provide-info-nearby"]]
+                        [ifelse chance <= 87 [
+                          set response-tasks-list [ "pack-belongings-nearby-action"]]
+                          [ set response-tasks-list []]
+  ]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 35 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 32 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 49 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 41 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 22 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 40 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 40 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 46 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 44 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 33 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 33 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 42 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 32 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 56 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 48 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 21 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-turkey-fire
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 12 [
+    set response-tasks-list [ "call-alarm-number-action"]]
+  [ifelse chance <= 20 [
+    set response-tasks-list [ "seek-info-coversation"] ]
+    [ifelse chance <= 26 [
+      set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+      [ifelse chance <= 31 [
+        set response-tasks-list [ "scan-environment" "seek-info-coversation"  " seek-info-professional " ]]
+        [ifelse chance <= 36[
+          set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+          [ ifelse chance <= 40 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 50[
+              set response-tasks-list  [ "scan-environment"]]
+              [ifelse chance <= 57 [
+                set response-tasks-list [ "seek-info-professional"] ]
+                [ifelse chance <= 61 [
+                  set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+                  [ifelse chance <= 67 [
+                    set response-tasks-list [ "phone-share-info"]  ]
+                    [ifelse chance <= 73 [
+                      set response-tasks-list ["shut-down-work-action"]  ]
+                      [ifelse chance <= 80 [
+                        set response-tasks-list [ "pack-belongings-nearby-action"]]
+                        [ifelse chance <= 87 [
+                          set response-tasks-list [ "physically-assist"]]
+                          [ifelse chance <= 92 [
+                            set response-tasks-list ["collect-emergency-equipment"]]
+                            [ set response-tasks-list []]
+ ]]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 49 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 44 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 50 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 52 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 35 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 50 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 39 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 50 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 48 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 49 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 50 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 46 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 38 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 61 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 48 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-uk-fire
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 10 [
+    set response-tasks-list [ "call-alarm-number-action"]]
+  [ifelse chance <= 16 [
+    set response-tasks-list [ "seek-info-coversation"] ]
+    [ifelse chance <= 22 [
+      set response-tasks-list [ "seek-info-other-location"]]
+      [ifelse chance <= 27 [
+        set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+        [ifelse chance <= 31[
+          set response-tasks-list [ "scan-environment" "phone-seek-info"]]
+          [ ifelse chance <= 37 [
+            set response-tasks-list [ "scan-environment" " seek-info-professional"]]
+            [ifelse chance <= 44[
+              set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+              [ifelse chance <= 48 [
+                set response-tasks-list [ "scan-environment" "take-coat-action"] ]
+                [ifelse chance <= 57 [
+                  set response-tasks-list [ "scan-environment"]]
+                  [ifelse chance <= 61 [
+                    set response-tasks-list [ "seek-info-professional"] ]
+                    [ifelse chance <= 67 [
+                      set response-tasks-list [ "actively-provide-info-nearby"]  ]
+                      [ifelse chance <= 71 [
+                        set response-tasks-list [ "actively-search-people-provide-info"]]
+                        [ifelse chance <= 84 [
+                          set response-tasks-list [ "pack-belongings-nearby-action"]]
+                          [ set response-tasks-list []]
+                          
+  ]]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 48 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 50 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-coversation" response-tasks-list  [
+    let chance3 random 100
+    if chance3 <= 55 [set remaining-response-tasks-list lput "seek-info-coversation"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 48 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 41 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 50 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 52 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 49 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 49 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 49 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 37 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 50 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 53 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 56 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 53 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 5 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-czech-basic-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 12 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 16[
+      set response-tasks-list  [ "scan-environment" "seek-info-other-location"]]
+      [ifelse chance <= 20 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional"]]
+        [ifelse chance <= 31 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+          [ifelse chance <= 35 [
+            set response-tasks-list [ "scan-environment" "take-coat-action"]]
+            [ifelse chance <= 48 [
+              set response-tasks-list [ "scan-environment"]]
+              [ifelse chance <= 52 [
+                set response-tasks-list ["seek-info-professional"] ]
+                [ifelse chance <= 56[
+                  set response-tasks-list ["pack-belongings-nearby-action" "seek-info-other-location"]]
+                  [ifelse chance <= 66 [
+                    set response-tasks-list["pack-belongings-nearby-action"]]
+                    [ set response-tasks-list []]
+                    
+  ]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 10 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 5 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 39 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 0 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 25 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 12 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 12 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 8 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 41 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 33 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 7 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 37 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 13 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+to setup-response-tasks-poland-basic-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 11 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 15 [
+      set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action" "take-coat-action"] ]
+      [ifelse chance <= 19 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ] ]
+        [ifelse chance <= 28 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+          [ifelse chance <= 69 [
+            set response-tasks-list [ "scan-environment"]]
+            [ifelse chance <= 78 [
+              set response-tasks-list [ "seek-info-professional"]]
+              [ifelse chance <= 86[
+                set response-tasks-list [ "pack-belongings-nearby-action"]]
+                [ set response-tasks-list []]
+]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 10 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 7 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 38 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 0 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 36 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 19 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 27 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 48 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 24 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 48 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 27 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]  
+end
+
+
+to setup-response-tasks-turkey-basic-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 10 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "scan-environment" "shut-down-work-action"]]
+    [ ifelse chance <= 18 [
+      set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "shut-down-work-action" ]]
+      [ifelse chance <= 24 [
+        set response-tasks-list  [ "scan-environment" "pack-belongings-nearby-action"  ]]
+        [ifelse chance <= 48 [
+          set response-tasks-list [ "scan-environment"]]
+          [ifelse chance <= 53 [
+            set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+            [ifelse chance <= 62 [
+              set response-tasks-list [ "seek-info-professional"]]
+              [ifelse chance <= 68 [
+                set response-tasks-list ["shut-down-work-action"] ]
+                [ifelse chance <= 75 [
+                  set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                  [ifelse chance <= 81 [
+                    set response-tasks-list [ "physically-assist"]]
+                    [ifelse chance <= 87 [
+                      set response-tasks-list ["collect-emergency-equipment"]]
+                      [ set response-tasks-list []]
+]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 25 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 21 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 39 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 4 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 46 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 20 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 21 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 45 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 45 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 29 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 41 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 33 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-uk-basic-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 6 [
+    set response-tasks-list ["seek-info-other-location"]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+    [ifelse chance <= 19 [
+      set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action"  ]]
+      [ ifelse chance <= 29 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+        [ifelse chance <= 36 [
+          set response-tasks-list  [ "scan-environment" "take-coat-action"]]
+          [ifelse chance <= 58 [
+            set response-tasks-list [ "scan-environment"]]
+            [ifelse chance <= 64 [
+              set response-tasks-list [ "seek-info-professional"]]
+              [ifelse chance <= 69 [
+                set response-tasks-list [ "pack-belongings-nearby-action" "scan-environment"]]
+                [ifelse chance <= 78 [
+                  set response-tasks-list [ "pack-belongings-nearby-action"]]
+                  [ifelse chance <= 83 [
+                    set response-tasks-list [ "take-coat-action"] ]
+                    [ set response-tasks-list []]
+       ]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 9 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 10 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 13 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 0 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 23 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-provide-info-nearby" response-tasks-list  [
+    let chance8 random 100
+    if chance8 <= 19 [set remaining-response-tasks-list lput "actively-provide-info-nearby"  remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 15 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 34 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 30 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 11 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 18 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 19 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-czech-staff-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 8 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+  [ifelse chance <= 12 [
+    set response-tasks-list [ "scan-environment" "shut-down-work-action"]]
+    [ifelse chance <= 16 [
+      set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional" ]]
+      [ifelse chance <= 23 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+        [ ifelse chance <= 28 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+          [ifelse chance <= 44[
+            set response-tasks-list [ "scan-environment"]]
+            [ifelse chance <= 45 [
+              set response-tasks-list [ "seek-info-professional" "scan-environment"]]
+              [ifelse chance <= 49 [
+                set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+                [ifelse chance <= 53 [
+                  set response-tasks-list [ "seek-info-professional"]]
+                  [ifelse chance <= 57 [
+                    set response-tasks-list [ "seek-info-other-location" "scan-environment"] ]
+                    [ifelse chance <= 61 [
+                      set response-tasks-list [ "pack-belongings-nearby-action" "seek-info-other-location" ] ]
+                      [ifelse chance <= 66 [
+                        set response-tasks-list [ "pack-belongings-nearby-action" "take-coat-action"]]
+                        [ifelse chance <= 75 [
+                          set response-tasks-list [ "pack-belongings-nearby-action"]]
+                          [ifelse chance <= 82 [
+                            set response-tasks-list [ "take-coat-action"]]
+                            [ set response-tasks-list []]
+                            
+  ]]]]]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 9 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 6 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 24 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 17 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 28 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 18 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 8 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 49 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 17 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 10 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 32 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 13 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-poland-staff-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 9 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+  [ifelse chance <= 15 [
+    set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action" "take-coat-action"]]
+    [ifelse chance <= 17 [
+      set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action"]]
+      [ifelse chance <= 22 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+        [ ifelse chance <= 31 [
+          set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+          [ifelse chance <= 37[
+            set response-tasks-list  [ "scan-environment" "physically-assist"]]
+            [ifelse chance <= 54 [
+              set response-tasks-list [ "scan-environment"]]
+              [ifelse chance <= 58 [
+                set response-tasks-list [ "seek-info-professional"]]
+                [ifelse chance <= 64 [
+                  set response-tasks-list [ "shut-down-work-action"] ]
+                  [ifelse chance <= 68 [
+                    set response-tasks-list [ "pack-belongings-nearby-action" "scan-environment"] ]
+                    [ifelse chance <= 75 [
+                      set response-tasks-list [ "pack-belongings-nearby-action" "physically-assist"]]
+                      [ifelse chance <= 81 [
+                        set response-tasks-list [ "pack-belongings-nearby-action"]]
+                        [ set response-tasks-list []]
+                        
+  ]]]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 11 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 8 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 19 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 21 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 29 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 12 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 23 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 14 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 38 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 19 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 6 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 29 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 26 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-turkey-staff-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 13 [
+    set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+  [ifelse chance <= 18 [
+    set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+    [ifelse chance <= 32[
+      set response-tasks-list [ "scan-environment"]]
+      [ ifelse chance <= 37 [
+        set response-tasks-list [ "seek-info-professional" "scan-environment"]]
+        [ifelse chance <= 47[
+          set response-tasks-list  [ "seek-info-professional"]]
+          [ifelse chance <= 51 [
+            set response-tasks-list ["shut-down-work-action" "pack-belongings-nearby-action"] ]
+            [ifelse chance <= 58 [
+              set response-tasks-list ["shut-down-work-action"] ]
+              [ifelse chance <= 62 [
+                set response-tasks-list [ "pack-belongings-nearby-action" "shut-down-work-action"]]
+                [ifelse chance <= 69 [
+                  set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                  [ifelse chance <= 76 [
+                    set response-tasks-list [ "physically-assist"] ]
+                    [ifelse chance <= 80 [
+                      set response-tasks-list ["collect-emergency-equipment" "seek-info-other-location"]]
+                      [ifelse chance <= 86 [
+                        set response-tasks-list ["collect-emergency-equipment"]]
+                        [ set response-tasks-list []]
+ ]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 21 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 26 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 16 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 25 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 33 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 19 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 23 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 27 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 44 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 20 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 5 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 41 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 26 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-uk-staff-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 7 [
+    set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+  [ifelse chance <= 12 [
+    set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+    [ ifelse chance <= 18 [
+      set response-tasks-list [ "scan-environment" "take-coat-action"]]
+      [ifelse chance <= 35 [
+        set response-tasks-list [ "scan-environment"]]
+        [ifelse chance <= 45 [
+          set response-tasks-list [ "seek-info-professional"]]
+          [ifelse chance <= 50 [
+            set response-tasks-list ["seek-info-other-location"]]
+            [ifelse chance <= 56 [
+              set response-tasks-list [ "pack-belongings-nearby-action" "take-coat-action"]]
+              [ifelse chance <= 66 [
+                set response-tasks-list [ "pack-belongings-nearby-action"] ]
+                [ifelse chance <= 78 [
+                  set response-tasks-list [ "take-coat-action"] ]
+                  [ifelse chance <= 84 [
+                    set response-tasks-list ["collect-emergency-equipment"]]
+                    [ set response-tasks-list []]
+                    
+  ]]]]]]]]]
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 10 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 10 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 13 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 24 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 32 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 10 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 20 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 10 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 24 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 13 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 10 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 16 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 10 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-czech-fire-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "call-alarm-number-action" "pack-belongings-nearby-action"]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "call-alarm-number-action"] ]
+    [ifelse chance <= 20 [
+      set response-tasks-list [ "scan-environment" "fight-fire"]]
+      [ifelse chance <= 27 [
+        set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+        [ifelse chance <= 33 [
+          set response-tasks-list  [ "scan-environment" " seek-info-professional "]]
+          [ifelse chance <= 38 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "seek-info-professional" ] ]
+            [ifelse chance <= 43 [
+              set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" "take-coat-action" ]]
+              [ifelse chance <= 62 [
+                set response-tasks-list [ "scan-environment"]  ]
+                [ifelse chance <= 69 [
+                  set response-tasks-list [ "seek-info-professional"] ]
+                  [ifelse chance <= 79 [
+                    set response-tasks-list [ "pack-belongings-nearby-action"]]
+                    [ set response-tasks-list []]
+]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 36 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 39 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 47 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 25 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 39 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 37 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 50 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 41 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 44 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 44 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 41 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 59 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 44 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 28 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 15 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-poland-fire-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 4 [
+    set response-tasks-list [ "call-alarm-number-action" "scan-environment"]]
+  [ifelse chance <= 14 [
+    set response-tasks-list [ "call-alarm-number-action"] ]
+    [ifelse chance <= 18 [
+      set response-tasks-list [ "scan-environment" "call-alarm-number-action" "seek-info-professional"]]
+      [ifelse chance <= 26 [
+        set response-tasks-list [ "scan-environment" "call-alarm-number-action" "pack-belongings-nearby-action"]]
+        [ ifelse chance <= 36 [
+          set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+          [ifelse chance <= 41 [
+            set response-tasks-list  [ "scan-environment" " seek-info-professional "]]
+            [ifelse chance <= 46 [
+              set response-tasks-list [ "scan-environment" "shut-down-work-action" "pack-belongings-nearby-action"] ]
+              [ifelse chance <= 57 [
+                set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+                [ifelse chance <= 65 [
+                  set response-tasks-list [ "scan-environment"]  ]
+                  [ifelse chance <= 69 [
+                    set response-tasks-list [ "seek-info-professional"] ]
+                    [ifelse chance <= 76 [
+                      set response-tasks-list [ "pack-belongings-nearby-action"]]
+                      [ set response-tasks-list []]
+                      
+  ]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 35 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 32 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 41 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 22 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 40 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 40 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 44 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 33 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 33 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 42 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 32 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 56 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 48 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 21 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-turkey-fire-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 12 [
+    set response-tasks-list [ "call-alarm-number-action"]]
+  [ifelse chance <= 18 [
+    set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+    [ifelse chance <= 23[
+      set response-tasks-list [ "scan-environment" " seek-info-professional "]]
+      [ ifelse chance <= 27 [
+        set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+        [ifelse chance <= 43[
+          set response-tasks-list  [ "scan-environment"]]
+          [ifelse chance <= 50 [
+            set response-tasks-list [ "seek-info-professional"] ]
+            [ifelse chance <= 54 [
+              set response-tasks-list [ "seek-info-professional" "pack-belongings-nearby-action"]]
+              [ifelse chance <= 60 [
+                set response-tasks-list [ "phone-share-info"]  ]
+                [ifelse chance <= 66 [
+                  set response-tasks-list ["shut-down-work-action"]  ]
+                  [ifelse chance <= 73 [
+                    set response-tasks-list [ "pack-belongings-nearby-action"]]
+                    [ifelse chance <= 80 [
+                      set response-tasks-list [ "physically-assist"]]
+                      [ifelse chance <= 85 [
+                        set response-tasks-list ["collect-emergency-equipment"]]
+                        [ set response-tasks-list []]
+                        
+  ]]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 49 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 44 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 52 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 35 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 55 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 39 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 48 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 49 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 50 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 46 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 38 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 61 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 48 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+to setup-response-tasks-uk-fire-closed-space
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance <= 10 [
+    set response-tasks-list [ "call-alarm-number-action"]]
+  [ifelse chance <= 16 [
+    set response-tasks-list [ "seek-info-other-location"]]
+    [ifelse chance <= 21 [
+      set response-tasks-list [ "scan-environment" "call-alarm-number-action"]]
+      [ifelse chance <= 25 [
+        set response-tasks-list [ "scan-environment" "phone-seek-info"]]
+        [ ifelse chance <= 31 [
+          set response-tasks-list [ "scan-environment" " seek-info-professional"]]
+          [ifelse chance <= 38 [
+            set response-tasks-list [ "scan-environment" "pack-belongings-nearby-action" ]]
+            [ifelse chance <= 42 [
+              set response-tasks-list [ "scan-environment" "take-coat-action"] ]
+              [ifelse chance <= 51 [
+                set response-tasks-list [ "scan-environment"]]
+                [ifelse chance <= 55 [
+                  set response-tasks-list [ "seek-info-professional"] ]
+                  [ifelse chance <= 59 [
+                    set response-tasks-list [ "actively-search-people-provide-info"]]
+                    [ifelse chance <= 72 [
+                      set response-tasks-list [ "pack-belongings-nearby-action"]]
+                      [ set response-tasks-list []]
+                      
+  ]]]]]]]]]]
+  
+  let remaining-response-tasks-list []
+  if  not member? "phone-seek-info" response-tasks-list  [
+    let chance1 random 100
+    if chance1 <= 48 [set remaining-response-tasks-list lput "phone-seek-info" remaining-response-tasks-list]]
+  if  not member? "Electronic-media-seek-info" response-tasks-list  [
+    let chance2 random 100
+    if chance2 <= 50 [set remaining-response-tasks-list lput "Electronic-media-seek-info"  remaining-response-tasks-list]]
+  if  not member? "seek-info-other-location" response-tasks-list  [
+    let chance4 random 100
+    if chance4 <= 48 [set remaining-response-tasks-list lput "seek-info-other-location"  remaining-response-tasks-list]]
+  if  not member? "scan-environment" response-tasks-list  [
+    let chance5 random 100
+    if chance5 <= 41 [set remaining-response-tasks-list lput "scan-environment"  remaining-response-tasks-list]]
+  if  not member? "seek-info-professional" response-tasks-list  [
+    let chance6 random 100
+    if chance6 <= 50 [set remaining-response-tasks-list lput "seek-info-professional"  remaining-response-tasks-list]]
+  if  not member? "phone-share-info" response-tasks-list  [
+    let chance7 random 100
+    if chance7 <= 52 [set remaining-response-tasks-list lput "phone-share-info"  remaining-response-tasks-list]]
+  if  not member? "actively-search-people-provide-info" response-tasks-list  [
+    let chance9 random 100
+    if chance9 <= 49 [set remaining-response-tasks-list lput "actively-search-people-provide-info" remaining-response-tasks-list]]
+  if  not member? "shut-down-work-action" response-tasks-list  [
+    let chance10 random 100
+    if chance10 <= 49 [set remaining-response-tasks-list lput "shut-down-work-action"  remaining-response-tasks-list]]
+  if  not member?  "pack-belongings-nearby-action"  response-tasks-list  [
+    let chance11 random 100
+    if chance11 <= 37 [set remaining-response-tasks-list lput  "pack-belongings-nearby-action"  remaining-response-tasks-list]]
+  if  not member? "take-coat-action"  response-tasks-list  [
+    let chance12 random 100
+    if chance12 <= 50 [set remaining-response-tasks-list lput  "take-coat-action"  remaining-response-tasks-list]]
+  if  not member?  "change-footwear-clothes-action" response-tasks-list  [
+    let chance13 random 100
+    if chance13 <= 53 [set remaining-response-tasks-list lput  "change-footwear-clothes-action"  remaining-response-tasks-list]]
+  if  not member?  "physically-assist" response-tasks-list  [ 
+    let chance14 random 100
+    if chance14 <= 56 [set remaining-response-tasks-list lput  "physically-assist"  remaining-response-tasks-list]]
+  if  not member?  "collect-emergency-equipment" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 53 [set remaining-response-tasks-list lput  "collect-emergency-equipment"  remaining-response-tasks-list]]
+  if  not member?  "call-alarm-number-action" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 18 [set remaining-response-tasks-list lput  "call-alarm-number-action" remaining-response-tasks-list]]
+  if  not member? "fight-fire" response-tasks-list  [
+    let chance15 random 100
+    if chance15 <= 5 [set remaining-response-tasks-list lput  "fight-fire"  remaining-response-tasks-list]]
+  
+  if  not empty? remaining-response-tasks-list [
+    set remaining-response-tasks-list shuffle remaining-response-tasks-list
+    foreach remaining-response-tasks-list [ x -> set response-tasks-list lput x response-tasks-list]
+  ]
+end
+
+;;;;;;;;;;;;;;;;;;; STAFF TASKS SETUP;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to setup-staff-tasks
+  
+  let chance random 100
+  set response-tasks-list []
+  ifelse chance < 40 
+  [set response-tasks-list [ "evacuate-visitors"]]
+  [let number-of-information-tasks 1 + random 3
+    let chance2 random 100
+    ifelse chance2 < 40 [set response-tasks-list lput "seek-info-coversation-staff" response-tasks-list]
+    [ifelse chance2 < 60 [set response-tasks-list lput "phone-seek-info" response-tasks-list]
+      [ifelse chance2 < 80 [set response-tasks-list lput "seek-info-other-location" response-tasks-list]
+        [set response-tasks-list lput "scan-environment" response-tasks-list]]]
+    if number-of-information-tasks > 1
+    [let chance3 random 100
+      ifelse chance3 < 25 [set response-tasks-list lput "seek-info-coversation-staff" response-tasks-list]
+      [ifelse chance3 < 25 [set response-tasks-list lput "phone-seek-info" response-tasks-list]
+        [ifelse chance3 < 25 [set response-tasks-list lput "seek-info-other-location" response-tasks-list]
+          [set response-tasks-list lput "scan-environment" response-tasks-list]]]  ]
+    if number-of-information-tasks > 2
+    [let chance4 random 100
+      ifelse chance4 < 25 [set response-tasks-list lput "seek-info-coversation-staff" response-tasks-list]
+      [ifelse chance4 < 25 [set response-tasks-list lput "phone-seek-info" response-tasks-list]
+        [ifelse chance4 < 25 [set response-tasks-list lput "seek-info-other-location" response-tasks-list]
+          [set response-tasks-list lput "scan-environment" response-tasks-list]]] ]
+    if number-of-information-tasks > 3
+    [let chance5 random 100
+      ifelse chance5 < 25 [set response-tasks-list lput "seek-info-coversation-staff" response-tasks-list]
+      [ifelse chance5 < 25 [set response-tasks-list lput "phone-seek-info" response-tasks-list]
+        [ifelse chance5 < 25 [set response-tasks-list lput "seek-info-other-location" response-tasks-list]
+          [set response-tasks-list lput "scan-environment" response-tasks-list]]] ]      
+    set response-tasks-list lput "evacuate-visitors" response-tasks-list  
+  ]
+  set current-response-tasks-list response-tasks-list 
+end

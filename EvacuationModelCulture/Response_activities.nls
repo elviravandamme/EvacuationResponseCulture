@@ -1,0 +1,1051 @@
+;;;;;;;;;;;;;;;; RESPONSE PHASE ACTIVITIES ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;; INFORMATION SEEKING TASKS;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to phone-seek-info
+  set response-activity-time-left 16 + random 18
+  set task-only-run-once? true
+end
+
+to Electronic-media-seek-info
+  set response-activity-time-left 12 + random 16
+  set task-only-run-once? true
+end
+
+to seek-info-coversation
+  while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+  
+  ;starting situation; If agent does not has conversation-buddy, check if there are others nearby
+  ifelse conversation-buddy = 0 [                                                 
+    ifelse any? other visitors in-radius 10
+    [set conversation-buddy min-one-of other visitors with [ evacuated-state? = false] [distance myself] 
+      set current-destination [patch-here] of conversation-buddy
+      check-destination-properties]
+    [set response-activity-time-left 4 + random 6
+      set task-only-run-once? true
+      set path 99999]]
+  
+  ; Following actions while not conversationing
+  [ if looking-around-seek-info? = false [
+    
+    ; If conversation buddy is evacuated or if conversation-buddy is not on the same patch anymore or if someone else is close, choose new buddy 
+    if faster-model-timer2 = 0 and ( [evacuated-state?] of conversation-buddy = true or (distance current-destination < 3 and distance conversation-buddy > 3) or 
+    (distance conversation-buddy > 2 and (any? other visitors in-radius 2 with [ evacuated-state? = false])))
+    [ let possible-buddies (other visitors in-radius 10 with [ evacuated-state? = false ] )                         ;; Only select buddies who you have not talked to yet
+      ifelse count possible-buddies > 0 [
+        set conversation-buddy min-one-of possible-buddies [ distance myself]
+        set current-destination [patch-here] of conversation-buddy
+        check-destination-properties
+        set path 99999]
+      [set response-task-finished-check? true
+        set path 99999]] 
+    
+    ; Determine path if there is no path. Move along path while not close to anyone
+    if (distance current-destination > 2) and (current-destination != 99999) and ([pcolor] of current-destination != 0) [
+      if path = 99999 or path = [] or current-path = [] [
+        set path find-a-path patch-here current-destination                              
+        set current-path path]
+      move-along-path 
+    ]  
+    ;; First time visitor is close to conversation buddy
+    if distance conversation-buddy <= 2 [
+      
+      set scan-environment-counter 7 + random 6                                                                      ;; Determine time to conversation
+      let y scan-environment-counter
+      set looking-around-seek-info? true
+      ask conversation-buddy [set conversationing-time-left y ]
+    ]]
+    
+    ;;  if talking to buddy, adjust timer
+    If looking-around-seek-info? = true[ 
+      set scan-environment-counter scan-environment-counter - 1
+      
+      ; If agent is done talking, task is done
+      if scan-environment-counter <= 1 [
+        set response-task-finished-check? true
+        set path 99999
+        set looking-around-seek-info? false
+        set conversation-buddy 0]] ]
+end
+
+
+to seek-info-other-location 
+  while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+  
+  ;starting situation
+  if number-of-places-to-visit = 0 [
+    let info-patches-big-range patches in-cone 20 120 with [member? self walking-patches and distance myself > vision-distance  ]
+    ifelse any? info-patches-big-range[ 
+      set current-destination one-of info-patches-big-range]
+    [let info-patches-big-big-range patches in-cone 20 320 with [(member? self walking-patches) and distance myself > vision-distance ]     ; Use a bigger range to find locations
+      set current-destination one-of info-patches-big-big-range ]
+    set number-of-places-to-visit 1 + random 3 ]                                                                   ;; Determine the number of places to visit
+  
+  ;; If not close to one of the destination-patches to seek info, calculate route and move to this patch
+  let check-if-destination-nearby patches in-radius 2
+  ifelse not member? current-destination check-if-destination-nearby [
+    set looking-around-seek-info? false
+    if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+      set path find-a-path patch-here current-destination                              
+      set current-path path]
+    move-along-path 
+  ]  
+  ;; First time visitor arrives at a patch to seek information
+  [Ifelse member? current-destination check-if-destination-nearby and (looking-around-seek-info? = false) [
+    set scan-environment-counter 2 + random 6                                                                     ;; Take 2 to 8 seconds at destination patch to look around
+    set looking-around-seek-info? true
+    ]
+    ;;  if looking around, adjust timer
+    [If member? current-destination check-if-destination-nearby and (looking-around-seek-info? = true) [
+      set scan-environment-counter scan-environment-counter - 1
+      
+      ; If turtle is done looking around, adjust number of places visited
+      if scan-environment-counter = 0 and number-of-places-to-visit > number-of-places-visited and (looking-around-seek-info? = true) [
+        set number-of-places-visited number-of-places-visited + 1
+        let info-patches-range patches in-cone 20 120 with [(member? self walking-patches) and distance myself > vision-distance  ] 
+        set current-destination one-of info-patches-range
+        if current-destination = NOBODY
+        [let info-patches-big-big-range patches in-cone 20 320 with [(member? self walking-patches) and distance myself > vision-distance ]     ; Use a bigger range to find locations
+          set current-destination one-of info-patches-big-big-range ]
+        set path 99999]]]]
+  
+  ; If all places have been visited, turtle is done with this action
+  if number-of-places-visited = number-of-places-to-visit [
+    set response-task-finished-check? true
+    set path 99999]
+  
+end
+
+to scan-environment 
+  set response-activity-time-left 6 + random 4
+  set task-only-run-once? true  
+  
+end
+
+to seek-info-professional
+  
+  ;starting situation
+  if number-of-places-to-visit = 0 [
+    let info-patches-big-range patches in-cone 20 100 with [member? self walking-patches and distance myself > 10 ]
+    ifelse any? info-patches-big-range[ 
+      set current-destination one-of info-patches-big-range]
+    ; Use a bigger range to find locations
+    [let info-patches-big-big-range patches in-radius 20 with [(member? self walking-patches) and distance myself > 6 ]
+      set current-destination one-of info-patches-big-big-range ]
+    set number-of-places-to-visit 2 + random 3                                                                      ;; Determine number of places to visit while searching for staff member
+    set looking-around-seek-info? false
+    check-destination-properties]
+  
+  ifelse looking-around-seek-info? = false [
+    ;; If not close to one of the destination-patches to seek info, calculate route and move to this patch
+    if distance current-destination > 2 [
+      if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+        set path find-a-path patch-here current-destination                              
+        set current-path path]
+      move-along-path ]
+    
+    if (conversation-buddy = 0 or (faster-model-timer1 = 0 and distance conversation-buddy > 5)) and any? staff in-radius 4 with [evacuated-state? = false]
+    [set conversation-buddy min-one-of staff in-radius 4 with [evacuated-state? = false] [ distance myself]  ;; Set nearby staff member as conversation buddy
+      set current-destination [patch-here] of conversation-buddy
+      check-destination-properties
+      set path 99999]
+    
+    if conversation-buddy != 0 [
+   
+      
+      ;; If visitor reaches staff member, conversation and end task
+      ifelse distance conversation-buddy < 2 [
+        set response-activity-time-left 5 + random 6
+        let y response-activity-time-left
+        set task-only-run-once? true
+        ask conversation-buddy [
+          set conversationing-time-left y
+          set people-informed lput (min-one-of visitors [distance self]) people-informed]  
+      stop]
+      [If (distance conversation-buddy > 6 and not any? staff in-radius 4) or ([evacuated-state?] of conversation-buddy = true)
+        [set conversation-buddy 0]]]
+    
+    ;; If visitor approaches destination, without a staff member nearby. 
+    if conversation-buddy = 0 and distance current-destination < 2
+      [set scan-environment-counter 2 + random 3
+        set looking-around-seek-info? true]
+  ]
+  [If looking-around-seek-info? = true [
+    ;;  if looking around or conversationing
+    
+    set scan-environment-counter scan-environment-counter - 1
+    
+    ; If turtle is done looking around, adjust number of places visited
+    if scan-environment-counter < 1 and number-of-places-to-visit > number-of-places-visited [
+      set number-of-places-visited number-of-places-visited + 1
+      set looking-around-seek-info? false
+      let info-patches-range patches in-cone 20 100 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 10  ]  ;; Determine new destination
+      set current-destination one-of info-patches-range
+      if current-destination = nobody
+      [let big-info-patches-range patches in-cone 20 320 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 10 ] 
+        set current-destination one-of big-info-patches-range]
+      check-destination-properties
+      set path 99999]
+  ]]
+  ; If staff member is not found within a certain amount of time, stop searching
+  if number-of-places-visited = number-of-places-to-visit [
+    set response-task-finished-check? true
+    set path 99999]
+  
+end
+
+;;;;;; INFORMATION SHARING TASKS;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to phone-share-info                     
+  set response-activity-time-left 16 + random 18
+  set task-only-run-once? true
+end
+
+to actively-provide-info-nearby
+  if [pcolor] of patch-here = orange [face min-one-of patches with [(pcolor = 9.9 or pcolor = 118.1)] [distance myself] fd 3]
+  
+  ;starting situation
+  if number-of-people-to-inform = 0 [
+    set number-of-people-to-inform 1 + random 2                                                                      ;; Determine the number of people to inform
+    ifelse any? other visitors in-radius 10
+    [set conversation-buddy min-one-of other visitors with [ member? self available-visitors-set] [distance myself]  ;; Choose nearest visitor as conversation buddy
+      set current-destination [patch-here] of conversation-buddy
+      check-destination-properties]
+    [set response-activity-time-left 4
+      set task-only-run-once? true
+      set path 99999]]
+  
+  ifelse conversation-buddy != 0[
+    
+    ; Following actions while not conversationing
+    if looking-around-seek-info? = false [
+      let x people-informed
+      
+      ; If conversation buddy is evacuated or if conversation-buddy is not on the same patch anymore or if someone else is close, choose new buddy 
+      if faster-model-timer1 = 0 and (  ([evacuated-state?] of conversation-buddy = true or (distance current-destination < 3 and distance conversation-buddy > 3)
+        or [pcolor] of current-destination = 0 or (distance conversation-buddy > 3 and (any? other visitors in-radius 2 with [member? self available-visitors-set and not member? self x]))))
+      [ let possible-buddies (other visitors in-radius vision-distance with [ member? self available-visitors-set and not member? self x and [pcolor] of patch-here != 0 ] )      ; Only select buddies who you have not talked to yet
+        ifelse count possible-buddies > 0 [
+          set conversation-buddy min-one-of possible-buddies [ distance myself]
+          set current-destination [patch-here] of conversation-buddy
+          check-destination-properties]
+        [set response-task-finished-check? true
+          set path 99999]]
+      
+      ; Determine path if there is no path. Move along path while not close to anyone
+      ifelse distance current-destination > 3 [
+        if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+          set path find-a-path patch-here current-destination                              
+          set current-path path]
+        move-along-path 
+      ]  
+      
+      ;; First time visitor is close to conversation buddy
+      [set people-informed lput conversation-buddy people-informed
+        set scan-environment-counter 4 + random 6                                                          ;; Determine amount of time to talk to buddy
+        let y scan-environment-counter
+        set looking-around-seek-info? true
+        ask conversation-buddy 
+        [ set conversationing-time-left y
+          ifelse response-state? = true [
+            if member? "seek-info-conversation" current-response-tasks-list and current-response-task != "seek-info-conversation"
+            [set current-response-tasks-list remove "seek-info-conversation" current-response-tasks-list   ;; Conversation-buddy adjusts response tasks list
+              set response-tasks-list remove "seek-info-conversation" response-tasks-list
+              check-empty-current-response-tasks-list]]
+          [if normal-state? = true and notification-time-countoff > 4
+            [set notification-time-countoff random 4] ] ]
+    ]]
+    
+    ;;  if talking to buddy, adjust timer
+    If looking-around-seek-info? = true[ 
+      set scan-environment-counter scan-environment-counter - 1
+      
+      ; If agent is done looking around, adjust number of places visited
+      if scan-environment-counter < 1 [
+        set number-of-people-informed number-of-people-informed + 1
+        if number-of-people-informed < number-of-people-to-inform [
+          let x people-informed
+          let possible-buddies (other visitors in-radius 10 with [ evacuated-state? = false and not member? self x] )
+          ifelse count possible-buddies > 0 [
+            set conversation-buddy min-one-of possible-buddies [ distance myself]
+            set current-destination [patch-here] of conversation-buddy
+            set path 99999]
+          [set response-task-finished-check? true
+            set path 99999]]
+        set looking-around-seek-info? false]]]
+  [set response-task-finished-check? true
+    set path 99999]
+  
+  ; If all places have been visited, agent is done with this action
+  if number-of-people-to-inform = number-of-people-informed [
+    set response-task-finished-check? true
+    set path 99999]
+  
+end
+
+to actively-search-people-provide-info
+  
+  ;starting situation
+  if number-of-places-to-visit = 0 [
+    let info-patches-big-range patches in-cone 20 120 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 12 ]
+    ifelse any? info-patches-big-range[ 
+      set current-destination one-of info-patches-big-range]
+    ; Use a bigger range to find locations
+    [let info-patches-big-big-range patches in-cone 20 320 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 12 ]
+      set current-destination one-of info-patches-big-big-range ]
+    check-destination-properties
+    set number-of-places-to-visit 2 + random 2 ]                                        ;; Determine the number of places to search for people
+  
+  if looking-around-seek-info? = false [
+    let x people-informed  
+    
+ if  distance current-destination > 2  [                                                ;; If not close to one of the destination-patches to seek info, calculate route and move to this patch
+      set looking-around-seek-info? false
+      if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+        set path find-a-path patch-here current-destination                              
+        set current-path path]
+      move-along-path ]
+  ; If there is no conversation buddy, or buddy is far away, or buddy has evacuated; pick a new buddy
+    if faster-model-timer2 = 0 and ( ((conversation-buddy = 0 or distance conversation-buddy > 6) and any? other visitors in-radius 4) or 
+      (conversation-buddy != 0 and [evacuated-state?] of conversation-buddy = true))
+    [let possible-buddies (other visitors in-radius 4 with [ evacuated-state? = false and not member? self x] )
+      ifelse any? possible-buddies
+      [set conversation-buddy min-one-of possible-buddies [ distance myself]
+        set current-destination [patch-here] of conversation-buddy
+        check-destination-properties
+        set path 99999]
+      [set response-task-finished-check? true                                           ;; If there is no-one around; terminate task
+        set path 99999
+        set conversation-buddy 0
+        stop]]
+    
+    ; If a conversationbuddy has been reached, or the destination is reached. The visitor will take time to conversation or look around
+    ifelse conversation-buddy != 0 [
+      ;; First time visitor arrives at a patch to seek information
+      if distance conversation-buddy < 3 [
+        set people-informed lput conversation-buddy people-informed
+        set scan-environment-counter 4 + random 6                                      ;; Amount of time to speak to conversation buddy
+        let y scan-environment-counter
+        set looking-around-seek-info? true
+        ask conversation-buddy 
+        [ set conversationing-time-left y
+          ifelse response-state? = true [
+            if member? "seek-info-conversation" current-response-tasks-list and current-response-task != "seek-info-conversation"
+            [set current-response-tasks-list remove "seek-info-conversation" current-response-tasks-list
+              set response-tasks-list remove "seek-info-conversation" response-tasks-list ;; Conversation buddy adjusts tasks
+              check-empty-current-response-tasks-list]]
+          [if normal-state? = true and notification-time-countoff > 4
+            [set notification-time-countoff random 5] ]
+    ]]]
+    [if conversation-buddy = 0 and distance current-destination < 3
+      [set scan-environment-counter 2 + random 3
+        set looking-around-seek-info? true]]
+  ]
+  
+  If looking-around-seek-info? = true [                                                   ;;  if looking around/ conversationing, adjust timer
+    
+    set scan-environment-counter scan-environment-counter - 1
+    
+    ; If turtle is done looking around, adjust number of places visited
+    if scan-environment-counter < 1 and number-of-places-to-visit > number-of-places-visited [
+      set number-of-places-visited number-of-places-visited + 1
+      set conversation-buddy 0
+      set looking-around-seek-info? false
+      let info-patches-range patches in-cone 20 120 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 12  ] 
+      set current-destination one-of info-patches-range                                   ;; Choose a new destination         
+      if current-destination = nobody
+      [let big-info-patches-range patches in-cone 20 320 with [(pcolor = 9.9 or pcolor = 118.1) and distance myself > 12  ] 
+        set current-destination one-of big-info-patches-range]
+      check-destination-properties
+      set path 99999]
+  ]
+  
+  ; If all places have been visited, turtle is done with this action
+  if number-of-places-visited = number-of-places-to-visit [
+    set response-task-finished-check? true
+    set path 99999]
+end
+
+;;;;;; ACTION TASKS;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to shut-down-work-action
+  ; If agent is not near sitting place, decide to return to sitting place or not
+  ifelse distance sitting-place > 2 [
+    
+    ifelse  (path = 99999 or path = [] or current-path = []) [
+      if go-collect-belongings = 0 [                                                     ;; Only perform check if this was not done before       
+        set go-collect-belongings check-go-to-sitting-place-for-action-task]
+      ifelse go-collect-belongings = True or go-collect-belongings = "Only search short time"   [
+        while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+        set current-destination sitting-place
+        set path find-a-path patch-here sitting-place                              
+        set current-path path                              
+        if go-collect-belongings = "Only search short time" [
+          set stop-searching-for-belongings-after-short-time? true
+          set maximum-time-to-search-for-belongings 50 + random 100] ]                   ;; Maximum time to search for belongings
+      [set response-activity-time-left 3 + random 2                                      ;; When agent decides not to return to place, take 3 to 5 seconds to make decision and terminate task
+        set task-only-run-once? true
+        set path 99999
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list
+        stop]
+      move-along-path] 
+    [move-along-path]
+  ]
+  [set response-activity-time-left 9 + random 12                                        ;;When sitting place has been reached, use 9 to 21 seconds to perform task
+    set task-only-run-once? true
+    set path 99999]
+  
+  if go-collect-belongings = true [
+    set time-searching-for-belongings time-searching-for-belongings + 1
+    if time-searching-for-belongings > maximum-time-to-search-for-belongings            ;; Stop searching for belongings if maximum time has been reached
+    [set response-task-finished-check? true
+      set path 99999]] 
+  
+end
+
+to take-coat-action
+    ; If agent is not near sitting place, decide to return to sitting place or not
+  ifelse distance sitting-place > 2 [
+    
+    ifelse  (path = 99999 or path = [] or current-path = []) [
+      if go-collect-belongings = 0 [                                                    ;; Only perform check if this was not done before     
+        set go-collect-belongings check-go-to-sitting-place-for-action-task]
+      ifelse go-collect-belongings = True or go-collect-belongings = "Only search short time"   [
+        while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+        set current-destination sitting-place
+        set path find-a-path patch-here sitting-place                             
+        set current-path path                             
+        if go-collect-belongings = "Only search short time" [
+          set stop-searching-for-belongings-after-short-time? true
+          set maximum-time-to-search-for-belongings 50 + random 100] ]                ;; Maximum time to search for belongings
+      [set response-activity-time-left 3 + random 2                                   ;; When agent decides not to return to place, take 3 to 5 seconds to make decision and terminate task
+        set task-only-run-once? true
+        set path 99999
+        set response-tasks-list remove "take-coat-action" response-tasks-list
+        stop]
+      move-along-path] 
+    [move-along-path]
+  ]
+  [set response-activity-time-left 6 + random 8
+    set task-only-run-once? true
+    set path 99999]
+  
+  if go-collect-belongings = true [
+    set time-searching-for-belongings time-searching-for-belongings + 1
+    if time-searching-for-belongings > maximum-time-to-search-for-belongings
+    [set response-task-finished-check? true
+      set path 99999]] 
+  
+  
+end
+
+to-report check-go-to-sitting-place-for-action-task                                ;; Probabilities for collecting belongings
+  let chance random 100
+  ifelse fire-seen? = false [                                                      ;; Probabilities in Basic scenario
+    ifelse Culture = "Czech Republic"[
+      ifelse chance < 38 [ report True] [
+        ifelse chance < 89 [report "Only search short time"] [ report False]]]
+    [ifelse Culture = "Poland" 
+      [ifelse chance < 32 [ report True] [
+        ifelse chance < 91 [report "Only search short time"][ report False]]]
+      [ifelse Culture = "Turkey" 
+        [ifelse chance < 40 [ report True] [
+          ifelse chance < 94 [report "Only search short time"][ report False]]]
+        [ ifelse chance < 41 [ report True] [
+          ifelse chance < 88 [report "Only search short time"][ report False]]; culture = "UK"
+  ]]]]
+  [                                                                                ;; Probabilities for fire-seen scenario                                                      
+    ifelse Culture = "Czech Republic"[
+      ifelse chance < 21 [ report True] [
+        ifelse chance < 73 [report "Only search short time"][ report False]]]
+    [ifelse Culture = "Poland" 
+      [ifelse chance < 22 [ report True] [
+        ifelse chance < 76 [report "Only search short time"][ report False]]]
+      [ifelse Culture = "Turkey" 
+        [ifelse chance < 29 [ report True] [
+          ifelse chance < 87 [report "Only search short time"][ report False]]]
+        [ ifelse chance < 20 [ report True] [
+          ifelse chance < 71 [report "Only search short time"][ report False]]; culture = "UK"
+  ]]]]
+end
+
+
+to pack-belongings-nearby-action
+  ifelse distance sitting-place > 2 [
+    
+    ifelse  (path = 99999 or path = [] or current-path = []) [
+      if go-collect-belongings = 0 [
+        set go-collect-belongings check-go-to-sitting-place-for-action-task]        ;; Only perform check if this was not done before  
+      ifelse go-collect-belongings = True or go-collect-belongings = "Only search short time"   [
+        while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+        set current-destination sitting-place
+        set path find-a-path patch-here sitting-place                                 
+        set current-path path                               
+        if go-collect-belongings = "Only search short time" [
+          set stop-searching-for-belongings-after-short-time? true
+          set maximum-time-to-search-for-belongings 50 + random 100] ]             ;; Determines maximum time to search for belongings
+      [set response-activity-time-left 3 + random 2
+        set task-only-run-once? true
+        set path 99999
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list
+        stop]
+      move-along-path] 
+    [move-along-path]
+  ]
+  [set response-activity-time-left 16 + random 18                                  ;; When near sitting place, take 16 to 34 seconds to collect belingings
+    set task-only-run-once? true
+    set path 99999]
+  
+  if go-collect-belongings = true [
+    set time-searching-for-belongings time-searching-for-belongings + 1
+    if time-searching-for-belongings > maximum-time-to-search-for-belongings       ;; Stop searching for belongings if maximum time has been reached
+    [set response-task-finished-check? true
+      set path 99999]] 
+end
+
+to change-footwear-clothes-action
+  set response-activity-time-left 5 + random 30
+  set task-only-run-once? true
+end
+
+to collect-emergency-equipment                                                     ;; Assumption: people know where emergency equiptment is located
+  
+  if emergency-equipment-destination = 0 [set emergency-equipment-destination one-of patches with [emergency-equipment-location? = true]]
+  
+  ifelse distance emergency-equipment-destination > 2 [
+    if  path = 99999 or path = [] or current-path = []  [
+      set current-destination emergency-equipment-destination
+      set path find-a-path patch-here emergency-equipment-destination                            
+      set current-path path                               
+    ]
+    move-along-path 
+  
+    if (distance emergency-equipment-destination <= 8 and distance emergency-equipment-destination >= 5) and count ([turtles in-radius 4] of emergency-equipment-destination) > 5
+    [ set response-activity-time-left 11 + random 18                             ;; If there are many other agents gathered around emergency equipment, terminate task
+      set task-only-run-once? true
+      set path 99999
+      set response-tasks-list remove "collect-emergency-equipment" response-tasks-list]]
+  [    set response-activity-time-left 11 + random 18
+    set task-only-run-once? true
+    set path 99999]    
+end
+
+
+to call-alarm-number-action
+  set response-activity-time-left 16 + random 18
+  set task-only-run-once? true
+end
+
+to pack-belongings-other-location-action
+  ifelse distance sitting-place > 2 [                                           ;; When not close to belongings, move towards sitting place
+    if  path = 99999 or path = [] or current-path = [] [
+      while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+      set current-destination sitting-place
+      set path find-a-path patch-here sitting-place                               
+      set current-path path                               
+    ]
+    move-along-path 
+  ]
+  [set response-activity-time-left 16 + random 18
+    set task-only-run-once? true
+    set path 99999  ]
+  
+  if stop-searching-for-belongings-after-short-time? = true [
+    set time-searching-for-belongings time-searching-for-belongings + 1
+    if time-searching-for-belongings > maximum-time-to-search-for-belongings
+    [set response-task-finished-check? true
+      set path 99999]] 
+  
+end
+
+to find-friend-other-location   
+  
+  ifelse [evacuated-state?] of friend = false [                                  ;; Assumption: agent knows if his friend has evacuated or not                
+    ifelse distance friend > 2 [
+      if  path = 99999 or path = [] or current-path = []  or (distance friend = 10) or (distance friend = 5) or
+      (faster-model-timer1 = 0 and (distance current-destination < 3 and distance friend > 4 ) ) or
+      (distance friend <= 15 and distance friend >= 5 and (recaculated-path-ticks-time = 0 or (ticks - recaculated-path-ticks-time > 20)) )  [  ;; Recaculate path at certain point in time
+        while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9][distance myself]  fd 1]  
+        set current-destination ([patch-here] of friend)
+        check-destination-properties
+        set path find-a-path patch-here current-destination                             
+        set current-path path
+        set recaculated-path-ticks-time ticks 
+      ]
+      move-along-path]
+    [set response-task-finished-check? true
+      set path 99999 ]]
+  [set response-task-finished-check? true
+    set path 99999]
+  
+  if stop-searching-for-friend-after-short-time? = true [                      
+    set time-searching-for-friend time-searching-for-friend + 1
+    if time-searching-for-friend > maximum-time-to-search-for-friend and distance friend > vision-distance  ;; Stop searching for friend when time limit has been reached and friend is not in vision distance
+    [set response-task-finished-check? true
+      set path 99999
+      set current-response-tasks-list remove "wait-for-friend" current-response-tasks-list
+      set response-tasks-list remove "wait-for-friend" response-tasks-list
+      if empty? current-response-tasks-list [
+        set response-state? false
+        set current-response-task []
+        set evacuating-state? true
+        set color green
+        set all-response-tasks-finished? true
+        start-evacuating]
+  ]]
+end
+
+to wait-for-friend
+  ifelse any? friends [
+    ifelse distance friend < 3                                                         ;; If friend is closeby, start evacuating together
+    [ if [evacuated-state?] of friend = true or [evacuating-state?] of friend = true [
+      set response-task-finished-check? true
+      friends-evacuate-together]               
+      if [current-response-task] of friend ="find-friend-other-location" [
+        ask friend [ set response-task-finished-check? true]]
+      
+      if [current-response-task] of friend ="wait-for-friend" [
+        set response-task-finished-check? true
+        ask friend [ set response-task-finished-check? true]
+        friends-evacuate-together]]
+    
+    [ifelse [evacuated-state?] of friend = true
+      [set response-task-finished-check? true]
+      [find-friend-other-location]]                                                    ;; Follow friend, when he is moving around to perform response tasks
+  ]
+  [ ;if not any? friends
+    set response-task-finished-check? true]
+  
+end
+
+to fight-fire                
+  let fire-patches min-one-of patches with [fire? = true] [distance myself]
+  let fire-neighbors patches with [distance fire-patches < 5 and (pcolor = 9.9 or pcolor = 118.1)]
+  set current-destination min-one-of fire-neighbors with [pcolor != 0][distance myself]  ;; Destination is one of the white patches near the fire
+  ifelse distance current-destination > 4 [
+    if  (path = 99999 or path = [] or current-path =[]) and current-destination != 99999 [                           
+      set path find-a-path patch-here current-destination                               
+      set current-path path]
+    move-along-path]
+  [ ;If distance current-destination < 4 
+    set response-activity-time-left 30 +  random 40                                    ;; Take 30 to 70 seconds to fight the fire
+    set task-only-run-once? true
+    set path 99999] 
+end
+
+to physically-assist
+  if conversation-buddy = 0 or conversation-buddy = nobody  [
+    ifelse any? other visitors in-radius 10 with [physical-assistance-needed? = true and evacuated-state? = false] [ ;; Check if there is anyone nearby who needs physical assistance
+      set conversation-buddy min-one-of other visitors with [physical-assistance-needed? = true and evacuated-state? = false] [ distance myself] ]
+    [set response-activity-time-left 6 + random 4                                       ;; If there is no-one nearby in need of assistance; terminate task
+      set task-only-run-once? true
+      set path 99999
+      stop]]
+  
+  ifelse [evacuated-state?] of conversation-buddy = false [
+    ifelse distance conversation-buddy > 2 [
+      if  path = 99999 or path = [] or current-path = []  or (distance conversation-buddy = 10) or (distance conversation-buddy = 5) or 
+      (faster-model-timer1 = 0  and (distance current-destination < 3 and distance conversation-buddy > 3) )  [ 
+        while [[pcolor] of patch-here = orange] [ face min-one-of patches with [pcolor = 9.9 or pcolor = 118.1 or pcolor = 87.1][distance myself] fd 1]
+        set current-destination ([patch-here] of conversation-buddy)
+        check-destination-properties
+        set path find-a-path patch-here current-destination                                ;; Astar determines shortest path
+        set current-path path]
+      move-along-path]
+    [set response-activity-time-left 16 + random 18                                      ;; Take 16 to 34 seconds to physically assist
+      let y response-activity-time-left
+      set task-only-run-once? true
+      set path 99999
+      ask conversation-buddy
+        [set conversationing-time-left y ]]]
+  [set response-task-finished-check? true
+    set path 99999]
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STAFF RESPONSE TASKS;;
+to evacuate-visitors
+  while [[pcolor] of patch-here = orange] [face min-one-of patches with [(pcolor = 9.9 or pcolor = 118.1)] [distance myself] fd 1]
+  
+  ;starting situation
+  let x people-informed
+  let u buddy-walking-away
+  if conversation-buddy = 0
+  ; Choose a conversation buddy
+  [ ifelse x != 0 [
+    let possible-buddies visitors in-radius 10 with [member? self available-visitors-set and conversationing-with-staff? = false and not member? self x and
+      ((last-time-conversationing-with-staff = 0) or((ticks - last-time-conversationing-with-staff) > 7)) and (not member? self u ) ]
+    ifelse any? possible-buddies 
+    [set conversation-buddy min-one-of possible-buddies [distance myself] 
+      set current-destination [patch-here] of conversation-buddy
+      set buddy-walking-away []
+      check-destination-properties]
+    [set response-task-finished-check? true                                          ;; If there is no visitor nearby, terminate task
+      set path 99999
+      set conversation-buddy 0]]
+    [let possible-buddies visitors in-radius 10 with [ member? self available-visitors-set and conversationing-with-staff? = false and
+      ((last-time-conversationing-with-staff = 0) or((ticks - last-time-conversationing-with-staff) > 7)) ]
+      ifelse any? possible-buddies  ;; x=0
+      [set conversation-buddy min-one-of possible-buddies [distance myself] 
+        set current-destination [patch-here] of conversation-buddy
+        check-destination-properties]
+      [set response-task-finished-check? true                                       ;; If there is no visitor nearby, terminate task
+        set path 99999
+        set conversation-buddy 0
+        stop]]]
+  
+  if conversation-buddy != 0 and conversation-buddy != nobody[
+    
+    ; Following actions while not conversationing
+    ifelse looking-around-seek-info? = false [
+      if faster-model-timer1 = 0 and ((distance current-destination < 3 and distance conversation-buddy > 3) and walking-speed < ([walking-speed] of conversation-buddy))  ;; If conversation-buddy is walking away; stop following
+      [set conversation-buddy 0
+        move
+        set buddy-walking-away lput  conversation-buddy buddy-walking-away
+        set path 99999
+        stop]
+      
+      ;If conversation-buddy is evacuated or if conversation-buddy is not on the same patch anymore or if someone else is close, choose new buddy 
+      if faster-model-timer1 = 0 and ( ([evacuated-state?] of conversation-buddy = true or (distance current-destination < 3 and distance conversation-buddy > 3)
+        or ([conversationing-with-staff?] of conversation-buddy = true)))
+      [ let possible-buddies (visitors in-radius 10 with [ not member? self x and member? self available-visitors-set and conversationing-with-staff? = false and
+      ((last-time-conversationing-with-staff = 0) or((ticks - last-time-conversationing-with-staff) > 7)) ] )
+        ; Only select buddies who you have not talked to yet
+        ifelse count possible-buddies > 0 [
+          set conversation-buddy min-one-of possible-buddies [ distance myself]
+          set current-destination [patch-here] of conversation-buddy
+          check-destination-properties
+          set path 99999]
+        [set response-task-finished-check? true
+          set path 99999
+          set conversation-buddy 0
+          stop]]
+      
+      ; Determine path if there is no path. Move along path while not close to anyone
+      if distance current-destination > 2 [
+        if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+          set path find-a-path patch-here current-destination                              
+          set current-path path
+        ]
+        move-along-path 
+      ]  
+      ;; First time staff member is close to conversation buddy
+      if distance conversation-buddy < 2 [
+        let nearby-people-informing visitors in-radius 4 with [not member? self x and member? self available-visitors-set and
+      ((last-time-conversationing-with-staff = 0) or((ticks - last-time-conversationing-with-staff) > 5))]
+        set scan-environment-counter 3 + random 5                                ;; Determine amount of time to conversation
+        let y scan-environment-counter
+        set looking-around-seek-info? true
+        ifelse count nearby-people-informing > 1 [
+          let nearby-people-informing-list [self] of nearby-people-informing 
+          foreach nearby-people-informing-list [ person-informed -> 
+            set people-informed lput person-informed people-informed]            ;; Add visitors to list of informed people
+         
+          ask nearby-people-informing                                            ;; Also inform other visitors nearby
+          [ set conversationing-with-staff? true
+            set conversationing-time-left y
+            ifelse normal-state? = true
+            [set informed-by-staff? true
+              if notification-time-countoff > 5 [
+                set notification-time-countoff random 5]]
+            [if response-state? = true
+              [if informed-by-staff? = false [
+                set informed-by-staff? true
+                informed-by-staff-adjust-response-tasks                          ;; Visitor adjusts response tasks due to information received
+          ]]]
+            set exit-destination min-one-of exit-possibilities [distance myself]]
+ ]
+        [set people-informed lput conversation-buddy people-informed
+          ask conversation-buddy
+          [set conversationing-with-staff? true
+            set conversationing-time-left y
+            if normal-state? = true and breed = visitors
+            [set informed-by-staff? true
+              set notification-time-countoff random 5]
+            if response-state? = true and breed = visitors
+            [if informed-by-staff? = false [
+              set informed-by-staff? true
+              informed-by-staff-adjust-response-tasks]
+              set exit-destination min-one-of exit-possibilities [distance myself]]]]
+    ]]
+    [ ;If looking-around-seek-info? = true
+      if  scan-environment-counter > 0 [        set scan-environment-counter scan-environment-counter - 1
+        let xx people-informed
+        if faster-model-timer2 = 0 and ( any? visitors in-radius 4 with [not member? self xx])[
+          let nearby-people-informing-extra visitors in-radius 4 with [not member? self xx and member? self available-visitors-set]
+          let nearby-people-informing-list-extra [self] of nearby-people-informing-extra  ;; Inform extra visitors who come nearby during conversation
+          let y scan-environment-counter
+          if count nearby-people-informing-extra > 0 [
+            foreach nearby-people-informing-list-extra [ person-informed-extra -> 
+              set people-informed lput person-informed-extra people-informed]
+ 
+              ask nearby-people-informing-extra
+              [ set conversationing-with-staff? true
+                set conversationing-time-left y
+                ifelse normal-state? = true
+                [set informed-by-staff? true
+                  if notification-time-countoff > 5 [
+                    set notification-time-countoff random 5]]
+                [if response-state? = true
+                  [if informed-by-staff? = false [
+                    set informed-by-staff? true
+                    informed-by-staff-adjust-response-tasks
+                  ]]]
+              set exit-destination min-one-of exit-possibilities [distance myself]]]]]
+      
+      if scan-environment-counter < 1 [                       
+        set conversation-buddy 0
+        set looking-around-seek-info? false
+  ]]]
+  
+  if conversation-buddy = nobody                                 
+  [ set response-task-finished-check? true                                 ;; Stop task, when there is no conversation-buddy anymore
+    set path 99999
+    set conversation-buddy 0
+    set looking-around-seek-info? false]
+end
+
+to seek-info-coversation-staff
+  ;starting situation
+  ifelse conversation-buddy = 0 [
+    ifelse any? other staff in-radius 15
+    [set conversation-buddy min-one-of other staff with [ evacuated-state? = false] [distance myself] 
+      set current-destination [patch-here] of conversation-buddy
+      check-destination-properties]
+    [set response-activity-time-left 10
+      set task-only-run-once? true
+      set path 99999]]
+  
+  [ ; if conversation-buddy != 0
+    ifelse looking-around-seek-info? = false [                                   ;; Following actions while not conversationing
+                                                                                 ;; If conversation buddy is evacuated or if conversation-buddy is not on the same patch anymore or if someone else is close, choose new buddy 
+      if faster-model-timer1 = 0 and (([evacuated-state?] of conversation-buddy = true or (distance current-destination < 3 and distance conversation-buddy > 3) ))
+      [ let possible-buddies (other staff in-radius 15 with [ evacuated-state? = false ] )      ; Only select buddies who you have not talked to yet
+        ifelse count possible-buddies > 0 [
+          set conversation-buddy min-one-of possible-buddies [ distance myself]
+          set current-destination [patch-here] of conversation-buddy
+          check-destination-properties
+          set path 99999]
+        [set response-task-finished-check? true
+          set path 99999]]
+      
+      ; Determine path if there is no path. Move along path while not close to anyone
+      if distance current-destination > 3 [
+        if (path = 99999 or path = [] or current-path = []) and current-destination != 99999 [
+          set path find-a-path patch-here current-destination                              
+          set current-path path]
+        move-along-path 
+      ]  
+      ;; First time staff member is close to conversation buddy
+      if distance conversation-buddy < 3 [                                                ;; Take 4 to 14 seconds to conversation
+        set scan-environment-counter 4 + random 10
+        set looking-around-seek-info? true
+    ]]
+    
+    [ ;  If looking-around-seek-info? = true 
+      if scan-environment-counter > 0 [
+        set scan-environment-counter scan-environment-counter - 1]
+      if scan-environment-counter < 1 [
+        set response-task-finished-check? true
+        set path 99999
+        set looking-around-seek-info? false]]
+  ]
+end
+
+;;; PROCEDURES;;;;
+;;;;;;;;;;;;;;;;;;
+
+to friends-evacuate-together
+  set  evacuating-with-friend? true
+  ask friend [ set  evacuating-with-friend? true ]
+
+  Ifelse walking-speed < [walking-speed] of friend [                                      ;; When evacuating, friends take the same walking speed. The speed is the minimum speed of both friends
+    let my-walkingspeed walking-speed
+    ask friend [ set walking-speed my-walkingspeed ]]
+  [let friend-speed [walking-speed] of friend
+    set walking-speed friend-speed]
+end
+
+to collect-belongings-check                                                               ;; Finalising response itineraries; check if agents collects belongings at the end
+  if distance sitting-place > 5
+  [ifelse fire-seen? = true                                                               ;; Collect belongings in basic scenario
+    [ if (not member? "take-coat-action" response-tasks-list) and ( not member?  "pack-belongings-nearby-action" response-tasks-list) and (not member? "shut-down-work-action" response-tasks-list) [
+      let chance random 100
+      ifelse Culture ="Czech Republic" [
+        ifelse chance <= 21 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+          set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+        [if chance <= 73 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+          set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+          set stop-searching-for-belongings-after-short-time? true
+          set maximum-time-to-search-for-belongings 50 + random 100]]]                     ;; Will search for this maximum amount of time for belongings
+      
+
+      [ifelse Culture = "Poland" [
+        
+        ifelse chance <= 22 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+          set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+        [if chance <= 76 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+          set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+          set stop-searching-for-belongings-after-short-time? true
+          set maximum-time-to-search-for-belongings 50 + random 100]]
+        
+        ]
+        [ifelse Culture = "Turkey"[
+          
+          ifelse chance <= 29 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+          [if chance <= 87 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+            set stop-searching-for-belongings-after-short-time? true
+            set maximum-time-to-search-for-belongings 50 + random 100]]
+          ]
+          [; culture = "UK"
+            
+            ifelse chance <= 20 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+              set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+            [if chance <= 71 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+              set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+              set stop-searching-for-belongings-after-short-time? true
+              set maximum-time-to-search-for-belongings 50 + random 100]]]
+    ]]]]
+    [; fire-seen = false                                                             ;; Collect belongings in fire-seen scenario
+      if (not member? "take-coat-action" response-tasks-list) and ( not member?  "pack-belongings-nearby-action" response-tasks-list) and (not member? "shut-down-work-action" response-tasks-list) [
+        let chance random 100
+        ifelse Culture ="Czech Republic" [
+          ifelse chance <= 38 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+          [if chance <= 90 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+            set stop-searching-for-belongings-after-short-time? true
+            set maximum-time-to-search-for-belongings 50 + random 100]]]
+        
+        ;; Will search for this maximum amount of time for belongings] ]
+        [ifelse Culture = "Poland" [
+          
+          ifelse chance <= 32 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+          [if chance <= 91 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+            set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+            set stop-searching-for-belongings-after-short-time? true
+            set maximum-time-to-search-for-belongings 50 + random 100]]
+          
+          ]
+          [ifelse Culture = "Turkey"[
+            
+            ifelse chance <= 40 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+              set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+            [if chance <= 94 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+              set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+              set stop-searching-for-belongings-after-short-time? true
+              set maximum-time-to-search-for-belongings 50 + random 100]]
+            ]
+            [; culture = "UK"
+              
+              ifelse chance <= 41 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+                set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list ]
+              [if chance <= 88 [ set response-tasks-list lput "pack-belongings-other-location-action" response-tasks-list
+                set current-response-tasks-list lput "pack-belongings-other-location-action" current-response-tasks-list
+                set stop-searching-for-belongings-after-short-time? true
+                set maximum-time-to-search-for-belongings 50 + random 100]]]
+  ]]]]]
+end
+
+to find-and-wait-for-friend-check                                                   ;; Finalising response itineraries
+  set friend one-of friends
+  ifelse distance friend < 5                                                        ;; If friend nearby
+  [ 
+    if chance-waiting-for-friend-reporter = True [
+      set response-tasks-list lput "wait-for-friend" response-tasks-list
+      set current-response-tasks-list lput "wait-for-friend" current-response-tasks-list]]
+                                                                                    ;; If friend not nearby
+  [ifelse chance-find-friend-reporter = True [
+    set current-response-tasks-list lput "find-friend-other-location" current-response-tasks-list
+    set response-tasks-list lput "find-friend-other-location" response-tasks-list
+    set current-response-tasks-list lput "wait-for-friend" current-response-tasks-list
+    set response-tasks-list lput "wait-for-friend" response-tasks-list]
+    [if chance-find-friend-reporter = "Only search short time"
+      [set current-response-tasks-list lput "find-friend-other-location" current-response-tasks-list
+        set response-tasks-list lput "find-friend-other-location" response-tasks-list
+        set current-response-tasks-list lput "wait-for-friend" current-response-tasks-list
+        set response-tasks-list lput "wait-for-friend" response-tasks-list
+        set stop-searching-for-friend-after-short-time? true
+        set maximum-time-to-search-for-friend 50 + random 100                       ;; Will search for this maximum amount of time for friend
+  ]]]
+  set response-task-finished-check? true
+end
+
+to-report chance-waiting-for-friend-reporter                                         ;; Probabilities for waiting for friends
+  let chance random 100
+  ifelse fire-seen? = false [
+    ifelse Culture = "Czech Republic"[
+      ifelse chance > 10 [ report True] [ report False]]
+    [ifelse Culture = "Poland" [ifelse chance > 18 [ report True] [ report False]]
+      [ifelse Culture = "Turkey" [ifelse chance > 17 [ report True] [ report False]]
+        [ifelse chance > 31 [ report True] [ report False]; culture = "UK"
+  ]]]]
+  [  ; fire-seen = True
+    ifelse Culture = "Czech Republic"[
+      ifelse chance > 17 [ report True] [ report False]]
+    [ifelse Culture = "Poland" [ifelse chance > 24 [ report True] [ report False]]
+      [ifelse Culture = "Turkey" [ifelse chance > 28 [ report True] [ report False]]
+        [ifelse chance > 41 [ report True] [ report False]; culture = "UK"]
+  ]]]]
+end
+
+to-report chance-find-friend-reporter                                                  ;; Probabilities for searching for friends
+  let chance random 100 
+  ifelse fire-seen? = false [
+    ifelse Culture = "Czech Republic"[
+      ifelse chance < 40 [ report True] [
+        ifelse chance < 89 [report "Only search short time"] [ report False]]]
+    [ifelse Culture = "Poland" 
+      [ifelse chance < 40 [ report True] [
+        ifelse chance < 91 [report "Only search short time"][ report False]]]
+      [ifelse Culture = "Turkey" 
+        [ifelse chance < 42 [ report True] [
+          ifelse chance < 91 [report "Only search short time"][ report False]]]
+        [ ifelse chance < 27 [ report True] [
+          ifelse chance < 87 [report "Only search short time"][ report False]]; culture = "UK"
+  ]]]]
+  [  ; fire-seen = True
+    ifelse Culture = "Czech Republic"[
+      ifelse chance < 37 [ report True] [
+        ifelse chance < 85 [report "Only search short time"][ report False]]]
+    [ifelse Culture = "Poland" 
+      [ifelse chance < 35 [ report True] [
+        ifelse chance < 88 [report "Only search short time"][ report False]]]
+      [ifelse Culture = "Turkey" 
+        [ifelse chance < 44 [ report True] [
+          ifelse chance < 90 [report "Only search short time"][ report False]]]
+        [ ifelse chance < 23 [ report True] [
+          ifelse chance < 72 [report "Only search short time"][ report False]]; culture = "UK"
+  ]]]]
+end
+to check-destination-properties
+  ; This function checks if a chosen destination is a valid patch.  If the chosen destination is not a valid patch; it is replaced by a nearby patch. This avoids errors in the model.
+  if [pcolor] of current-destination = 0 or not member? current-destination walking-patches or [pcolor] of current-destination = orange ; Unvalid patches are patches not part of the walking patches.
+  
+  [ let destination-neighbors1 [neighbors] of current-destination
+    
+    ifelse any? destination-neighbors1 [
+      ifelse count destination-neighbors1 > 1 [
+        set current-destination min-one-of destination-neighbors1 with [member? self walking-patches] [distance myself]]
+      [ifelse member? destination-neighbors1 walking-patches [ set current-destination destination-neighbors1]
+        [;user-message ( word "turtle: " who  ",  only one destination neighbor which is not a walking patch")
+      ]]
+    
+    ]
+    [let destination-neighbors2 [patches in-radius 3 with [member? self walking-patches] ] of current-destination 
+      ifelse any? destination-neighbors2
+      [ ifelse count destination-neighbors2 > 1 [
+        set current-destination min-one-of destination-neighbors2 [distance myself]]
+        [ set current-destination destination-neighbors2]]
+        [set current-destination one-of patches in-radius 2 with [member? self walking-patches]]
+      
+      
+      ;user-message ( word "turtle: " who  ",  No destination found")
+  ]]
+end

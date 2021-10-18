@@ -1,0 +1,280 @@
+;;;;;;;;;;;;;;;;;;;;;;;; VARIABLES ;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+globals [
+  exit-north1                  ;; Exit on top (left one of the two doors)
+  exit-north2                  ;; Exit on top (right one of the two doors)
+  exit-west                    ;; Exit on left
+  exit-east                    ;; Exit on right
+  main-exit                    ;; The exit chosen as main exit in a specific model version
+  exit-possibilities           ;; The exits available in a specific model version
+  astar_closed                 ;; The closed list of patches --> see astaralgorithm.nls
+  astar_open                   ;; The open list of patches --> see astaralgorithm.nls
+  Alarm                        ;; Alarm goes off
+  start-alarm                  ;; The moment at which danger happens and the alarm goes off
+  alarm-happened?              ;; Check if alarm has gone off already
+  stop-condition?              ;; Check if model should be stopped
+  total-evacuation-time        ;; The total evacuation time until all turtles have left the building
+  emergency-equipment-location
+  patchsize
+  walking-patches
+  free-patches
+  faster-model-timer1
+  faster-model-timer2
+  faster-model-timer3
+  available-visitors-set
+]
+
+breed [ staff a-staff ]
+breed [ visitors visitor ]
+
+turtles-own [
+  man?                         ;; Man/ Female property. If man? is set to true, the turtle is a man, otherwise it is a woman.
+  normal-state?                ;; No awareness of incident
+  response-state?              ;; Will change to true when turtle is responding to threat; executing information and action tasks
+  evacuating-state?            ;; Will change to true when a turtle stands up from its place and starts evacuating
+  evacuated-state?             ;; Set to true when a turtle hasa left the building and thus is evacuated
+  walking-speed                ;;
+  task-time-left               ;; Amount of time left to finish a non-evacuation task
+  familiarity?                 ;; Familiarity property. If familiarity? is set to true, a turtle is familiar with the building.
+  current-destination          ;; The patch the agent is currently going towards.
+  path                         ;; The optimal path from source to destination --> see astaralgorithm.nls
+  current-path                 ;; Part of the path that is left to be traversed --> see astaralgorithm.nls
+  exit-destination             ;; The destination/ exit that a turtle goes to to leave the building.
+  fire-seen?                   ;; Set to true if the turtle has actually seen the fire happening
+  response-tasks-list          ;; Total list of response tasks to be executed
+  current-response-tasks-list  ;; List of response tasks which still need to be executed
+  current-response-task        ;; Response tasks which is currently being executed
+  response-activity-time-left  ;;
+  response-task-finished-check?;;
+  task-only-run-once?          ;; Check if task is only setting a time or also executing something
+  notification-time               ;; Total notification time
+  notification-time-countoff      ;; notification time left
+  first-response-task?          ;; Check if the first task has been done or not
+  all-response-tasks-finished?
+  number-of-places-to-visit
+  scan-environment-counter
+  number-of-places-visited
+  looking-around-seek-info?
+  people-informed
+  conversation-buddy
+  conversationing-time-left
+  recaculated-path-ticks-time
+  response-tasks-added
+  
+  response-time                ;; The time from the moment the alarm goes off, until a turtle decides to leave its' place.
+  evacuation-time              ;; The time it takes a turtle to leave the building, after the alarm has gone of ( thus includes response time).
+ 
+  response-time-excl-notif
+  movement-time
+  buddy-walking-away
+    
+]
+
+staff-own[
+]
+
+visitors-own [
+  time-searching-for-friend
+  time-searching-for-belongings
+  informed-by-staff?
+  evacuating-with-friend?
+  friend
+  sitting-place                ;; Initial place where person is sitting
+  friends                      ;; List of friends of a visitor
+  stop-searching-for-friend-after-short-time?
+  maximum-time-to-search-for-friend
+  stop-searching-for-belongings-after-short-time?
+  maximum-time-to-search-for-belongings
+  physical-assistance-needed?
+  last-time-conversationing-with-staff
+  go-to-sitting-place-belongings
+  emergency-equipment-destination
+  number-of-people-to-inform
+  number-of-people-informed
+  conversationing-with-staff?
+  go-collect-belongings
+  
+]
+
+patches-own [
+  fire?                       ;; Set to true if there is fire taking place on a patch
+  parent-patch                ;; patch's predecessor --> see astaralgorithm.nls
+  f                           ;; the value of knowledge plus heuristic cost function f() --> see astaralgorithm.nls
+  g                           ;; the value of knowledge cost function g() --> see astaralgorithm.nls
+  h                           ;; the value of heuristic cost function h() --> see astaralgorithm.nls
+  emergency-equipment-location?
+]
+
+to setup
+
+  clear-all
+
+  setupMap
+  reset-timer
+
+  ;profiler:reset
+; profiler:start         ;; start profiling
+  set faster-model-timer1 0
+  set faster-model-timer2 0
+  set start-alarm 3000                                                                    ;; Arbitary high number, when alarm has not taken place yet
+  set alarm-happened? false
+  set Alarm false
+  set patchsize 2
+  
+  ask patches with [shade-of? red pcolor][ set pcolor 14.8 ]
+  ask patches with [shade-of? violet pcolor][ set pcolor 118.1 ]
+  ask patches with [shade-of? cyan pcolor][ set pcolor 87.1]
+  ask patches with [pcolor = 134.3] [set pcolor 14.8]
+  ask patch 78 21 [ set pcolor 9.9]
+  ask patch 32 121 [ set pcolor 9.9]
+  ask patch 102 69 [ set pcolor 9.9]
+  ask patch 73 64 [ set pcolor 9.9]
+  ask patch 14 136 [ set pcolor 9.9]
+  ask patch 146 69 [ set pcolor 9.9]
+  ask patch 29 74 [ set pcolor 9.9]
+  
+  ; exit-locations
+  set exit-north1 patches with [(pcolor = 14.8) and (pxcor > 86) and (pxcor < 102 )]      ;; Setup exit-north1: when the patches are red and within these coordinates, then it is this exit.
+  set exit-north2 patches with [(pcolor = 14.8) and (pxcor > 86) and (pxcor < 102)]       ;; Setup exit-north2: when the patches are red and within these scoordinates, then it is this exit.
+  set exit-east patches with [(pcolor = 14.8) and (pxcor > 116) and (pxcor < 123) ]        ;; Setup exit-west: when the patches are red and within these scoordinates, then it is this exit.
+  set exit-west patches with [(pcolor = 14.8) and (pxcor > 22) and (pxcor < 28)]           ;; Setup exit-east: when the patches are red and within these scoordinates, then it is this exit.
+
+  setup-exits
+  setup-emergency-equipment-location
+  
+
+  setup-staff
+  setup-visitors
+  setup-visitor-links
+ 
+
+  reset-ticks
+  set walking-patches patches with [ (pcolor != black) and (pcolor != orange) and (pcolor != 44.9) and (pcolor != 44.8) and (pcolor != 42.6) and (pcolor != yellow)]
+ ; set obstacle-patches patches with [pcolor = black  or pcolor = orange or pcolor = red or pcolor = 14.8 or pcolor = 14.8 or pcolor = 44.9 or pcolor = 87.1]
+  
+
+end
+
+
+to setup-exits                                                                             ;; Procedure determines which exits are available in the current model-version
+  ifelse Exits-available = "All-exits" [
+    set main-exit (patch-set exit-north1 exit-north2 )
+    set exit-possibilities  (patch-set exit-north1 exit-north2 exit-west exit-east) ][
+    ifelse Exits-available = "Only-North-exit" [
+      set main-exit (patch-set exit-north1 exit-north2 )
+      set exit-possibilities (patch-set exit-north1 exit-north2 ) ] [
+      ifelse Exits-available = "North-West" [
+        set main-exit (patch-set exit-north1 exit-north2 )
+        set exit-possibilities (patch-set exit-north1 exit-north2 exit-west ) ][
+        ifelse Exits-available = "North-East" [
+          set main-exit (patch-set exit-north1 exit-north2 )
+          set exit-possibilities (patch-set exit-north1 exit-north2 exit-east ) ][
+          ifelse Exits-available = "West-East" [
+            set main-exit (patch-set exit-west )
+            set exit-possibilities (patch-set exit-east exit-west) ][
+            ifelse Exits-available = "West-only" [
+              set main-exit  (patch-set exit-west )
+              set exit-possibilities ( patch-set exit-west ) ][
+              if Exits-available = "East-only" [
+                set main-exit ( patch-set exit-east )
+                set exit-possibilities (patch-set exit-east ) ]]]]]]]
+end
+
+to setup-visitors
+  ask n-of initial-number-visitor patches with [ (pcolor = 87.1) or (pcolor = 118.1 and not any? other turtles in-radius 8) ]                    ;; Visitors show up only on white patches inside the building
+  [    sprout-visitors 1;
+    [ set path 99999                                                                     ;; If no path is determined yet, path is set to 99999
+      set exit-destination 99999                                                               ;; If no destination is determined yet, destination is set to 99999
+      set color green
+      set evacuating-state? false
+      set normal-state? true
+      set response-state? false
+      set evacuated-state? false
+      set task-time-left random 20                                                       ;; Task-time left is randomly set between 0 and 2 minutes
+      set notification-time-countoff  99999                                              ;; If no notification-time-countoff is determined yet, notification-time-countoff is set to 99999
+      set size 3
+      set last-time-conversationing-with-staff 0
+      set number-of-places-to-visit 0
+      set number-of-places-visited 0
+      set number-of-people-to-inform 0
+      set number-of-people-informed 0
+      set go-collect-belongings 0
+      set looking-around-seek-info? false
+      set first-response-task? true
+      if [pcolor] of patch-here = 118.1 and any? other turtles in-radius 5 [ move-to one-of patches with [pcolor = 87.1]]
+      set sitting-place patch-here
+      set fire-seen? false
+      set all-response-tasks-finished? false
+      set people-informed []
+      set evacuating-with-friend? false   
+      set informed-by-staff? false
+      set buddy-walking-away []
+      set conversationing-with-staff? false
+      set emergency-equipment-destination 0
+      set recaculated-path-ticks-time 0
+      set go-to-sitting-place-belongings 0
+      set conversationing-time-left 0
+      set stop-searching-for-friend-after-short-time? false
+      ifelse random 100 < 5 [ set physical-assistance-needed? true] [set physical-assistance-needed? false]
+      if random 100 < visitors-not-on-place [ move-to one-of patches with [(pcolor = 9.9 or pcolor = 118.1)]]
+      ifelse random 100 < familiarity-meter [ set familiarity? true] [ set familiarity? false ] ;; Familiarity determined based on chance by using familiarity-meter
+      set current-destination one-of patches with [(pcolor = 9.9 or pcolor = 118.1)]                          ;; When turtle is walking randomly at the beginning (before evacuating-state?-state?) the turtleneeds this as a destination
+      ifelse random 100 < gender-ratio  [set man? true] [set man? false]                  ;; Set gender based on slider
+      ifelse ( man? = true )  [ set walking-speed ( 1.2 + (random-float 0.2) ) ]           ;; Speed for men
+      [if (man? = false ) [set walking-speed (1.1 + (random-float 0.2 ) ) ]]] ]          ;; Speed for women
+  
+
+end
+
+to setup-visitor-links      ;;Determine which visitors are friends/ colleagues
+  ask visitors [
+    if ( count link-neighbors = 0 ) [
+      let friendless-visitors ( other visitors with [ count link-neighbors = 0 ]) 
+      if  ( count friendless-visitors)  > 0 [
+        if random 100 < chance-friends-in-building / 2 [ 
+          ifelse random 100 < chance-friends-nearby 
+          [create-link-with min-one-of friendless-visitors [distance [sitting-place] of myself] ]
+          [ create-link-with one-of friendless-visitors]]]]]
+  ask visitors
+  [set friends link-neighbors
+    if any? link-neighbors [set friend one-of friends]]
+end
+
+
+to setup-staff
+    ask n-of initial-number-staff patches with [(pcolor = white) or (pcolor = 87.1) or (pcolor = 118.1 and not any? other turtles in-radius 8) ]                        ;; Staff show up only on white patches inside the building
+    [sprout-staff 1
+    [ set path 99999                                                                      ;; If no path is determined yet, path is set to 99999
+      set exit-destination 99999                                                               ;; If no destination is determined yet, destination is set to 99999
+      set color blue
+      set evacuating-state? false
+      set evacuated-state? false
+      set normal-state? true
+      set notification-time-countoff 99999
+      set task-time-left random 20                                                       ;; Task-time left is randomly set between 0 and 2 minutes
+      set size 3
+      set normal-state? true
+      set response-state? false
+      set evacuated-state? false      
+      set first-response-task? true
+      set recaculated-path-ticks-time 0
+      set looking-around-seek-info? false
+      set buddy-walking-away []
+      set people-informed []
+      set conversationing-time-left 0
+      set familiarity? true                                                               ;; All staffmembers are considered familiar with the building
+      set current-destination one-of patches with [(pcolor = 9.9 or pcolor = 118.1)]                          ;; When turtle is walking randomly at the beginning (before evacuating-state?-state?) the turtleneeds this as a destination
+      ifelse random 100 < gender-ratio  [set man? true] [set man? false]                  ;; Set gender based on the slider
+      ifelse ( man? = true )  [ set walking-speed ( 1 + (random-float 0.5) ) ] ;; Speed for men
+      [if (man? = false ) [set walking-speed (0.9 + (random-float 0.5 ) ) ]]] ;; speed for women
+  ]
+end
+
+to setup-emergency-equipment-location
+  ask patch 126 26               ;; Fire can only occur on white patches, so the fire doesn't show up outside on the stairs in front of the library. It can also not occur too close to an exit
+  [ set emergency-equipment-location? true
+    set pcolor turquoise
+    ask neighbors [set pcolor turquoise set emergency-equipment-location? true]                                      ;; Make neighboring patches orange as well
+  ]
+end

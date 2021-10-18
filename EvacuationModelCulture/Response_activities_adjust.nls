@@ -1,0 +1,1240 @@
+;;; ADJUST RESPONSE ACTIVITIES DUE TO CUES ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to informed-by-staff-adjust-response-tasks                 ;; Adjustment of response tasks after being informed by a staff member
+  ;;
+  If culture = "Czech Republic" [informed-by-staff-adjust-response-tasks-czech]
+  If culture = "Poland" [informed-by-staff-adjust-response-tasks-poland]
+  If culture ="UK" [informed-by-staff-adjust-response-tasks-uk]
+  If culture = "Turkey" [informed-by-staff-adjust-response-tasks-turkey]
+  
+  check-empty-current-response-tasks-list
+  
+end
+
+to informed-by-staff-adjust-response-tasks-czech           ;; Probabilities for adjusting response tasks for Czech Republic
+  
+  set response-tasks-added []
+  
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 27 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 11 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 23 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 21 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 20 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 36 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 19 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 30 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 6 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 23 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 0 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added                                  ;; Randomize order of newly added response tasks
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ] ;; Addn new tasks to response tasks list
+  ]
+  
+  
+end
+
+to informed-by-staff-adjust-response-tasks-poland
+  set response-tasks-added []
+  
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "phone-seek-info" response-tasks-added]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 33 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 6 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 38 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 24 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 20 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 34 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 12 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 30 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 26 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 21 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 12 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 12 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 50 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 7 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+to informed-by-staff-adjust-response-tasks-turkey
+  set response-tasks-added []
+  
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 17 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 17 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 9 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 21 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 13 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 28 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 16 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 17 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 15 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 19 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 7 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 11 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 15 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 33 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 33 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 1  [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 14 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 24 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+to informed-by-staff-adjust-response-tasks-uk
+  set response-tasks-added []
+  
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 14 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 5 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 17 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 14 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 35 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 24 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 5 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 13 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 25 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 15 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 6 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 6 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 31 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 0 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 13 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 25 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 26 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 2 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+    
+end
+
+to fire-seen-adjust-response-tasks
+  ;;
+  If culture = "Czech Republic" [fire-seen-adjust-response-tasks-czech]
+  If culture = "Poland" [fire-seen-adjust-response-tasks-poland]
+  If culture ="UK" [fire-seen-adjust-response-tasks-uk]
+  If culture = "Turkey" [fire-seen-adjust-response-tasks-turkey]
+  
+  check-empty-current-response-tasks-list
+  
+end
+
+to fire-seen-adjust-response-tasks-czech
+  set response-tasks-added []
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 57 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 27 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 33 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 18 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 30 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 38 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 0 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 40 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 46 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 15 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 29 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 28 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  
+  ifelse member? "call-alarm-number-action" response-tasks-list
+  [ ]
+  [let chance random 100
+    if chance < 48 [set response-tasks-added lput "call-alarm-number-action" response-tasks-added
+  ]] 
+  
+  ifelse member? "fight-fire" response-tasks-list
+  [ ]
+  [let chance random 100
+    if chance < 21 [set response-tasks-added lput "fight-fire" response-tasks-added
+  ]] 
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+to fire-seen-adjust-response-tasks-poland
+  set response-tasks-added []
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance <= 0 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 33 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 3 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 35 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 19 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 13 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 38 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance <= 0 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 6 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 15 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 42 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 0 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 28 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 36 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 29 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 28 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 11 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 21 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  
+  ifelse member? "call-alarm-number-action" response-tasks-list
+  []
+  [let chance random 100
+    if chance < 57 [set response-tasks-added lput "call-alarm-number-action" response-tasks-added
+  ]] 
+  
+  ifelse member? "fight-fire" response-tasks-list
+  []
+  [let chance random 100
+    if chance < 18 [set response-tasks-added lput "fight-fire" response-tasks-added
+  ]] 
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+to fire-seen-adjust-response-tasks-turkey
+  set response-tasks-added []
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 22 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 38 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 2 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 26 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 17 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 11 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 24 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 6 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance < 31 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 7 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 14 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 21 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 7 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 25 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 6 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 23 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 27 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 1  [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 17 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 0 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 10 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 27 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  
+  ifelse member? "call-alarm-number-action" response-tasks-list
+  []
+  [let chance random 100
+    if chance < 36 [set response-tasks-added lput "call-alarm-number-action" response-tasks-added
+  ]] 
+  
+  ifelse member? "fight-fire" response-tasks-list
+  []
+  [let chance random 100
+    if chance < 18 [set response-tasks-added lput "fight-fire" response-tasks-added
+  ]] 
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+to fire-seen-adjust-response-tasks-uk
+  set response-tasks-added []
+  ifelse member? "phone-seek-info" response-tasks-list
+  [ if member? "phone-seek-info" current-response-tasks-list and current-response-task != "phone-seek-info"
+    [let chance random 100
+      if chance < 13 [set current-response-tasks-list remove "phone-seek-info" current-response-tasks-list
+        set response-tasks-list remove "phone-seek-info" response-tasks-list  ]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "phone-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "Electronic-media-seek-info" response-tasks-list 
+  [ if member? "Electronic-media-seek-info" current-response-tasks-list and current-response-task != "Electronic-media-seek-info"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "Electronic-media-seek-info" current-response-tasks-list
+        set response-tasks-list remove "Electronic-media-seek-info" response-tasks-list ]]]
+  [let chance random 100
+    if chance <= 4 [set response-tasks-added lput "Electronic-media-seek-info" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-coversation" response-tasks-list
+  [ if member? "seek-info-coversation" current-response-tasks-list and current-response-task != "seek-info-coversation"
+    [let chance random 100
+      if chance < 33 [set current-response-tasks-list remove "seek-info-coversation" current-response-tasks-list
+        set response-tasks-list remove "seek-info-coversation" response-tasks-list]]]
+  [let chance random 100
+    if chance < 9 [set response-tasks-added lput "seek-info-coversation" response-tasks-added
+  ]]
+  
+  ifelse member? "seek-info-other-location" response-tasks-list
+  [ if member? "seek-info-other-location" current-response-tasks-list and current-response-task != "seek-info-other-location"
+    [let chance random 100
+      if chance < 39 [set current-response-tasks-list remove "seek-info-other-location" current-response-tasks-list 
+        set response-tasks-list remove "seek-info-other-location" response-tasks-list]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "seek-info-other-location" response-tasks-added
+  ]] 
+  
+  ifelse member? "scan-environment" response-tasks-list
+  [ if member? "scan-environment" current-response-tasks-list and current-response-task != "scan-environment"
+    [let chance random 100
+      if chance < 20 [set current-response-tasks-list remove "scan-environment" current-response-tasks-list
+        set response-tasks-list remove "scan-environment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 10 [set response-tasks-added lput "scan-environment" response-tasks-added
+  ]] 
+  
+  ifelse member? "seek-info-professional" response-tasks-list
+  [ if member? "seek-info-professional" current-response-tasks-list and current-response-task != "seek-info-professional"
+    [let chance random 100
+      if chance < 27 [set current-response-tasks-list remove "seek-info-professional" current-response-tasks-list
+        set response-tasks-list remove "seek-info-professional" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 7 [set response-tasks-added lput "seek-info-professional" response-tasks-added
+  ]]
+  
+  ifelse member? "phone-share-info" response-tasks-list
+  [ if member? "phone-share-info" current-response-tasks-list and current-response-task != "phone-share-info"
+    [let chance random 100
+      if chance <= 0 [set current-response-tasks-list remove "phone-share-info" current-response-tasks-list 
+        set response-tasks-list remove "phone-share-info" response-tasks-list]]]
+  [let chance random 100
+    if chance < 3 [set response-tasks-added lput "phone-share-info" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-provide-info-nearby" response-tasks-list
+  [ if member? "actively-provide-info-nearby" current-response-tasks-list and current-response-task != "actively-provide-info-nearby"
+    [let chance random 100
+      if chance < 8 [set current-response-tasks-list remove "actively-provide-info-nearby" current-response-tasks-list
+        set response-tasks-list remove "actively-provide-info-nearby" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "actively-provide-info-nearby" response-tasks-added
+  ]]
+  
+  ifelse member? "actively-search-people-provide-info" response-tasks-list
+  [ if member? "actively-search-people-provide-info" current-response-tasks-list and current-response-task != "actively-search-people-provide-info"
+    [let chance random 100
+      if chance < 24 [set current-response-tasks-list remove "actively-search-people-provide-info" current-response-tasks-list
+        set response-tasks-list remove "actively-search-people-provide-info" response-tasks-list
+  ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "actively-search-people-provide-info" response-tasks-added
+  ]]
+  
+  ifelse member? "shut-down-work-action" response-tasks-list
+  [ if member? "shut-down-work-action" current-response-tasks-list and current-response-task != "shut-down-work-action"
+    [let chance random 100
+      if chance < 31 [set current-response-tasks-list remove "shut-down-work-action" current-response-tasks-list
+        set response-tasks-list remove "shut-down-work-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 1 [set response-tasks-added lput "shut-down-work-action" response-tasks-added
+  ]]
+  
+  ifelse member? "pack-belongings-nearby-action" response-tasks-list
+  [ if member? "pack-belongings-nearby-action" current-response-tasks-list and current-response-task != "pack-belongings-nearby-action"
+    [let chance random 100
+      if chance < 29 [set current-response-tasks-list remove "pack-belongings-nearby-action" current-response-tasks-list 
+        set response-tasks-list remove "pack-belongings-nearby-action" response-tasks-list]]]
+  [let chance random 100
+    if chance <= 0 [set response-tasks-added lput "pack-belongings-nearby-action" response-tasks-added
+  ]]
+  
+  ifelse member? "take-coat-action" response-tasks-list
+  [ if member? "take-coat-action" current-response-tasks-list and current-response-task != "take-coat-action"
+    [let chance random 100
+      if chance < 37 [set current-response-tasks-list remove "take-coat-action" current-response-tasks-list
+        set response-tasks-list remove "take-coat-action" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "take-coat-action" response-tasks-added
+  ]]
+  
+  ifelse member? "change-footwear-clothes-action" response-tasks-list
+  [ if member? "change-footwear-clothes-action" current-response-tasks-list and current-response-task != "change-footwear-clothes-action"
+    [let chance random 100
+      if chance <= 33 [set current-response-tasks-list remove "change-footwear-clothes-action" current-response-tasks-list
+        set response-tasks-list remove "change-footwear-clothes-action" response-tasks-list]]]
+  [let chance random 100
+    if chance < 2 [set response-tasks-added lput "change-footwear-clothes-action" response-tasks-added
+  ]]
+  
+  ifelse member? "physically-assist" response-tasks-list
+  [ if member? "physically-assist" current-response-tasks-list and current-response-task != "physically-assist"
+    [let chance random 100
+      if chance < 26 [set current-response-tasks-list remove "physically-assist" current-response-tasks-list 
+        set response-tasks-list remove "physically-assist" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 8 [set response-tasks-added lput "physically-assist" response-tasks-added
+  ]]
+  
+  ifelse member? "collect-emergency-equipment" response-tasks-list
+  [ if member? "collect-emergency-equipment" current-response-tasks-list and current-response-task != "collect-emergency-equipment"
+    [let chance random 100
+      if chance < 35 [set current-response-tasks-list remove "collect-emergency-equipment" current-response-tasks-list 
+        set response-tasks-list remove "collect-emergency-equipment" response-tasks-list ]]]
+  [let chance random 100
+    if chance < 4 [set response-tasks-added lput "collect-emergency-equipment" response-tasks-added
+  ]]
+  
+  ifelse member? "call-alarm-number-action" response-tasks-list
+  [ ]
+  [let chance random 100
+    if chance < 33 [set response-tasks-added lput "call-alarm-number-action" response-tasks-added
+  ]] 
+  
+  ifelse member? "fight-fire" response-tasks-list
+  []
+  [let chance random 100
+    if chance < 5 [set response-tasks-added lput "fight-fire" response-tasks-added
+  ]] 
+  if  not empty? response-tasks-added [
+    set response-tasks-added shuffle response-tasks-added
+    foreach response-tasks-added [ x -> set response-tasks-list lput x response-tasks-list set current-response-tasks-list lput x current-response-tasks-list ]]
+end
+
+;;;;; PROCEDURES;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+to check-empty-current-response-tasks-list                                  ;; If after deletion of tasks, list is empty; perform checks for finalising response tasks
+  if empty? current-response-tasks-list
+  [collect-belongings-check
+    if any? friends [
+      set current-response-tasks-list lput "find-and-wait-for-friend-check" current-response-tasks-list]]
+  if empty? current-response-tasks-list                                     ;; If response phase finished; start evacuation
+  [set response-state? false
+    set current-response-task []
+    set evacuating-state? true
+    set color green
+    set all-response-tasks-finished? true
+    start-evacuating] 
+end
+
+
+
